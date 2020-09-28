@@ -1,0 +1,87 @@
+#colaDestacada {
+    font-family: 'Num';
+    width: 100%;
+    height: 100%;
+
+    .num {
+        font-size: 14vw;
+        line-height: 18vw;
+    }
+
+    .nombre {
+        font-size: 2.4vw;
+        line-height: 3vw;
+    }
+}
+
+#colas {
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    background: $light-color;
+    padding: 0;
+    box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.4);
+    font-family: 'Num';
+
+    .nombre {
+        font-size: 2.2vw;
+        line-height: 3vw;
+    }
+}
+
+#colas, #colaDestacada {
+    text-align: center;
+    div { 
+        flex: 1;
+        display: flex;
+        justify-content: space-around;
+        flex-direction: column;
+     }
+
+    .num {
+        display: block;
+        color: white;
+    }
+
+    .nombre {
+        background-color: white;
+    }
+}
+
+
+body {
+    &.derecha, &.izquierda {
+        #colas {
+            flex-direction: column;
+            height: 100vh;
+    
+            div {
+                flex-direction: column;
+                width: 100%;
+            }
+
+            .num {
+                font-size: 12vw;
+                line-height: 1em;
+            }
+        }
+    }
+
+    &.abajo {
+        #colas {
+            flex-direction: row;
+            width: 100vw;
+
+            div {
+                flex-direction: column;
+                height: 100%;
+            }
+
+            .num {
+                font-size: 11vw;
+                line-height: .8em;
+                padding-bottom: .1em;
+            }
+        }
+    }
+}

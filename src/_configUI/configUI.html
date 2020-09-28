@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Personalizacion</title>
+    <script src="../_configUI/configUI.js" defer></script>
+    <link rel="stylesheet" href="../res/config.css">
+  </head>
+  <body class="config">
+      <form id="configUI" class="flex">
+        <div class="col">
+          <fieldset id="turnos">
+            <legend>Turnos</legend>
+            <label for="type">Posición</label>
+            <select id="type">
+              <option value="0">Sin turnos</option>
+              <option value="1">Derecha</option>
+              <option value="2">Izquierda</option>
+              <option value="3">Abajo</option>
+            </select>
+
+            <div>
+              <label for="colaDestacada">Cola destacada</label>
+              <select id="colaDestacada">
+                <option value="0">Ninguna</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </div>
+              
+            <div>
+              <label for="exColas">Excluir colas</label>
+              <select id="exColas" size="6" multiple>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </div>
+          </fieldset>
+
+          <div>
+            <input type="checkbox" id="info">
+            <label for="info">Barra informativa</label>
+          </div>
+        </div>
+
+        <div class="col">
+          <fieldset id="custom">
+            <legend>Personalización</legend>
+            <div>
+              <label for="mainColor">Color principal</label>
+              <input type="color" id="mainColor">
+            </div>
+            <div>
+              <label for="secondaryColor">Color secundario</label>
+              <input type="color" id="secondaryColor">
+            </div>
+
+            <div>
+              <label for="footerLogo">Logo cliente (1000px x 250px)</label>
+              <input type="file" id="footerLogo" accept="image/png">
+            </div>
+            <div><canvas id="canvasLogo"></canvas></div>
+
+            <div>
+              <label for="barImg">Imagen de barra (1000px x 180px)</label>
+              <input type="file" id="barImg" accept="image/png">
+            </div>
+            <div><canvas id="canvasBarImg"></canvas></div>
+          </fieldset>
+
+          <button id="save">Aplicar</button>
+          <button id="default">Restaurar</button>
+        </div>
+      </form>
+
+  </body>
+</html>

@@ -1,0 +1,188 @@
+body {
+    &.canalcorp {
+        #info {
+            position: fixed;
+            bottom: 0;
+            height: 11vh;
+            width: 100vw;
+
+            .item {
+                position: absolute;
+                z-index: 4;
+            }
+
+            #barBG, #barBorder, #barProgress, #barProgress {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                bottom: 0vh;
+            }
+
+            #barBorder, #barProgress {
+                clip-path: ellipse(102vw 12vh at 100vw 11.7vh);
+            }
+
+            #barBorder {
+                background: white;
+                z-index: 1;
+            }
+
+            #barProgress {
+                background: var(--secondary-color);
+                z-index: 2;
+                width: 0%;
+
+                &.advance {
+                    animation-name: advance;
+                    animation-timing-function: linear;
+                }
+            }
+
+            #barBG {
+                background: linear-gradient( to right, var(--main-color-dark), var(--main-color) 40%, var(--main-color) 60%, var(--main-color-dark) );
+                clip-path: ellipse(102vw 12vh at 100vw 12.5vh);
+                z-index: 3;
+            }
+
+            img { 
+                &#barImage {
+                    left: 35%;
+                    bottom: 0;
+                    height: 80%;
+                }
+        
+                &#clientLogo {
+                    height: 11vh;
+                    right: 3%;
+                    bottom: 0;
+                }
+            }
+
+            #time { 
+                font-size: 5vw;
+                color: var(--secondary-color);
+                background-color: white;
+                border-radius: 1vw 1vw 0vw 0vw;
+                padding: 0 2vw .5vw;
+                font-family: 'font';
+                left: 9%;
+                bottom: 0;
+                line-height: 1em;
+            }
+        }
+    }
+
+    &.derecha, &.izquierda {
+        #info {
+            position: relative;
+
+            .item {
+                z-index: 4;
+                position: absolute;
+            }
+
+            #barBG, #barBorder, #barProgress, #barProgress {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                bottom: 0vh;
+            }
+
+            #barBorder, #barProgress {
+                clip-path: ellipse(112vw 12vh at 100vw 11.7vh);
+            }
+
+            #barBorder {
+                background: white;
+                z-index: 1;
+            }
+
+            #barProgress {
+                background: var(--secondary-color);
+                z-index: 2;
+                width: 0%;
+
+                &.advance {
+                    animation-name: advance;
+                    animation-timing-function: linear;
+                }
+            }
+
+            #barBG {
+                background: linear-gradient( to right, var(--main-color-dark), var(--main-color) 40%, var(--main-color) 60%, var(--main-color-dark) );
+                clip-path: ellipse(112vw 12vh at 100vw 12.5vh);
+                z-index: 3;
+            }
+
+            img { 
+                &#barBG {
+                    bottom: 0;
+                    position: absolute;
+                    width: 101%;
+                }
+    
+                &#barImage {
+                    left: 35%;
+                    bottom: 0%;
+                    height: 80%;
+                }
+        
+                &#clientLogo {
+                    right: 1%;
+                    bottom: 0%;
+                    width: 25%;
+                }
+            }
+
+            #time { 
+                font-size: 6vw;
+                color: var(--secondary-color);
+                background-color: white;
+                border-radius: 1vw 1vw 0vw 0vw;
+                padding: 0 2vw .5vw;
+                font-family: 'font';
+                left: 5%;
+                bottom: -10%;
+                line-height: 1em;
+            }
+        }
+    }
+
+    &.abajo {
+        #info {
+            background: radial-gradient(var(--main-color), var(--main-color-dark));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-evenly;
+            box-shadow: 0 0 10px 3px rgba(0,0,0,0.4);
+            z-index: 2;
+
+            .item { flex: 1; }
+
+            #colaDestacada {
+                flex: 3;
+            }
+
+            img {
+                object-fit: contain;
+                
+                &#barImage {
+                    width: 80%;
+                }
+        
+                &#clientLogo {
+                    width: 80%;
+                }
+            }
+
+            #time {
+                color: white;
+                font-size: 6vw;
+                font-family: 'font';
+                line-height: 1em;
+            }
+        }
+
+    }
+}

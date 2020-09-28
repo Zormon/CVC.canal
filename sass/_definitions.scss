@@ -1,0 +1,53 @@
+$main-color: #157946;
+$secondary-color: #ec1b24;
+
+$light-color: white;
+$dark-color: black;
+
+$fade-duration: .25s;
+
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1;}
+}
+
+@keyframes flash {
+    35% {
+        text-shadow: 0 0 15px yellow, 0 0 30px white;
+    }
+}
+
+@keyframes zoom-in {
+    0% {     
+        clip-path: circle(0 at 40% 40%);
+        opacity: 0;
+    }
+    40% {
+        opacity: 1;
+    }
+    100% {
+        clip-path: circle(60vw at 50% 50%);
+    }
+}
+
+@keyframes advance {
+    0%      { width: 0%; }
+    100%    { width: 100%; }
+}
+
+@font-face {
+    font-family: 'Num';
+    src: url('num.ttf');
+}
+
+@font-face {
+    font-family: 'font';
+    src: url(num.ttf);
+    font-weight: 900;
+}
+
+
+.effect {
+    animation: flash 1.3s ease !important;
+}
