@@ -4,12 +4,12 @@
     height: 100%;
 
     .num {
-        font-size: 14vw;
-        line-height: 18vw;
+        font-size: 25vh;
+        line-height: 33vh;
     }
 
     .nombre {
-        font-size: 2.4vw;
+        font-size: 4.5vh;
         line-height: 3vw;
     }
 }
@@ -22,10 +22,15 @@
     padding: 0;
     box-shadow: 0 0 10px 3px rgba(0, 0, 0, 0.4);
     font-family: 'Num';
+    background: radial-gradient( circle, var(--secondary-color-light), var(--secondary-color));
+
+    div > div {
+        max-height: 44vh;
+    }
 
     .nombre {
-        font-size: 2.2vw;
-        line-height: 3vw;
+        font-size: 3.8vh;
+        line-height: 5.5vh;
     }
 }
 
@@ -34,8 +39,8 @@
     div { 
         flex: 1;
         display: flex;
-        justify-content: space-around;
         flex-direction: column;
+        justify-content: space-around;
      }
 
     .num {
@@ -45,6 +50,25 @@
 
     .nombre {
         background-color: white;
+    }
+
+    .texto {
+        color: white;
+        font-size: 4vh;
+        background-color: rgba(0,0,0,0.4);
+    }
+
+    
+    .historial {
+        font-size: 3vh;
+        color: $light-color;
+
+        tr:nth-child(1) { background-color: rgba(255,255,255,.25); }
+        tr:nth-child(2) { background-color: rgba(255,255,255,.15); }
+
+        td:first-child {
+            width: 30%;
+        }
     }
 }
 
@@ -61,7 +85,7 @@ body {
             }
 
             .num {
-                font-size: 12vw;
+                font-size: 22vh;
                 line-height: 1em;
             }
         }
@@ -78,7 +102,7 @@ body {
             }
 
             .num {
-                font-size: 11vw;
+                font-size: 20vh;
                 line-height: .8em;
                 padding-bottom: .1em;
             }

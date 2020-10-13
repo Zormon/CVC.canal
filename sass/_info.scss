@@ -130,12 +130,12 @@ body {
                 &#clientLogo {
                     right: 1%;
                     bottom: 0%;
-                    width: 25%;
+                    height: 92%;
                 }
             }
 
             #time { 
-                font-size: 6vw;
+                font-size: 11vh;
                 color: var(--secondary-color);
                 background-color: white;
                 border-radius: 1vw 1vw 0vw 0vw;
@@ -184,5 +184,29 @@ body {
             }
         }
 
+    }
+}
+
+
+.modalBox {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    z-index: 9;
+
+    background-color: rgba(0,0,0,0.6);
+
+    > div {
+        width: 40%;
+        height: 20%;
+        color: black;
+        background: white;
+        box-shadow: 0 0 20px 0 red;
+        border-radius: 10px;
+        font-size: 1.2em;
     }
 }

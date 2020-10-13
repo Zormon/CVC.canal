@@ -5,45 +5,30 @@ function $$$(id)    { return document.querySelectorAll(id)  }
 const remote = require('electron').remote
 const { ipcRenderer } = require('electron')
 
-var interface = remote.getGlobal('interface')
+var UI = remote.getGlobal('UI')
 
 function saveConfigUI() {
-    interface.colors.main = $('mainColor').value
-    interface.colors.secondary = $('secondaryColor').value
-    interface.info = $('info').checked
-    interface.type = parseInt($('type').value)
-    interface.colaDestacada = parseInt($('colaDestacada').value)
+    UI.colors.main = $('mainColor').value
+    UI.colors.secondary = $('secondaryColor').value
+    UI.info = $('info').checked
+    UI.type = parseInt($('type').value)
+    UI.colas.historial = $('historial').checked
+    UI.colas.mensaje = $('textoColas').checked
+    UI.colas.destacada = parseInt($('colaDestacada').value)
 
-    interface.exColas = Array.from( $('exColas').selectedOptions ).map(el => parseInt(el.value))
+    UI.colas.excluir = Array.from( $('exColas').selectedOptions ).map(el => parseInt(el.value))
 
     // Imagen de logo
     if (typeof $('footerLogo').files[0] != 'undefined') {
-        interface.logo = {name: 'logoCliente.png', file: $('canvasLogo').toDataURL("image/png").substring(22)}
+        UI.logo = {name: 'logoCliente.png', file: $('canvasLogo').toDataURL("image/png").substring(22)}
     }
 
     // Imagen de barra
     if (typeof $('barImg').files[0] != 'undefined') {
-        interface.barImg = {name: 'barImage.png', file: $('canvasBarImg').toDataURL("image/png").substring(22)}
+        UI.barImg = {name: 'barImage.png', file: $('canvasBarImg').toDataURL("image/png").substring(22)}
     }
 
-    ipcRenderer.send('saveInterface', interface )
-}
-
-function updateFieldsFromType(type) {
-    switch (type) {
-        case 0: // Sin colas
-            $('colaDestacada').disabled = true
-            $('exColas').disabled = true
-        break
-        case 3: // Abajo
-            $('colaDestacada').disabled = false
-            $('exColas').disabled = false
-        break
-        default:
-            $('colaDestacada').disabled = true
-            $('exColas').disabled = false
-        break
-    }
+    ipcRenderer.send('saveUI', UI )
 }
 
 function canvasThumb(event, canvas, width, height) {
@@ -62,41 +47,76 @@ function clearCanvas(canvas) {
     canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
 }
 
+/**
+ * ###############################################################################
+ * ################################### EVENTOS ###################################
+ * ############################################################################### 
+ * */
 
-$('type').onchange = (e) => { updateFieldsFromType( parseInt(e.currentTarget.value)) }
+    $('textoColas').onchange = (e) => { 
+        if (e.currentTarget.checked)    { $('historial').disabled = false }
+        else                            { $('historial').checked = false; $('historial').disabled = true }
+     }
 
-$('footerLogo').onchange = (e) => { 
-    if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(e.currentTarget, $('canvasLogo'), 1000, 250) } 
-    else                                                    { clearCanvas($('canvasLogo')) }
-}
+    $('type').onchange = (e) => { 
+        switch (parseInt(e.currentTarget.value)) {
+            case 0: // Sin colas
+                $('turnos').disabled = true
+            break
+            case 3: // Abajo
+                $('turnos').disabled = false
+                $('colaDestacada').disabled = false
+                $('exColas').disabled = false
+            break
+            default:
+                $('turnos').disabled = false
+                $('colaDestacada').disabled = true
+                $('exColas').disabled = false
+            break
+        }
+    }
 
-$('barImg').onchange = (e) => { 
-    if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(e.currentTarget, $('canvasBarImg'), 1000, 180) } 
-    else                                                    { clearCanvas($('canvasBarImg')) }
-}
+    $('footerLogo').onchange = (e) => { 
+        if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(e.currentTarget, $('canvasLogo'), 1000, 250) } 
+        else                                                    { clearCanvas($('canvasLogo')) }
+    }
 
-$('save').onclick = (e)=> {
-    e.preventDefault()
-    if ( $('configUI').checkValidity() )    { saveConfigUI() } 
-    else                                    { $('configUI').reportValidity() }
-}
+    $('barImg').onchange = (e) => { 
+        if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(e.currentTarget, $('canvasBarImg'), 1000, 180) } 
+        else                                                    { clearCanvas($('canvasBarImg')) }
+    }
 
-$('default').onclick = (e)=> {
-    e.preventDefault()
-    $('mainColor').value = '#ff0000'
-    $('secondaryColor').value = '#00ff00'
-    $('info').checked = true
-    $('type').value = 0
-    $('colaDestacada').value = 0
-    $$$(`#exColas option`).forEach( el => { el.selected = false })
-}
+    $('save').onclick = (e)=> {
+        e.preventDefault()
+        if ( $('configUI').checkValidity() )    { saveConfigUI() } 
+        else                                    { $('configUI').reportValidity() }
+    }
+
+    $('default').onclick = (e)=> {
+        e.preventDefault()
+        $('mainColor').value = '#ff0000'
+        $('secondaryColor').value = '#00ff00'
+        $('info').checked = true
+        $('historial').checked = false
+        $('textoColas').checked = false
+        $('type').value = 0
+        $('colaDestacada').value = 0
+        $$$(`#exColas option`).forEach( el => { el.selected = false })
+    }
+
+/*=====  End of Eventos  ======*/
 
 // Initialization
-$('mainColor').value = interface.colors.main
-$('secondaryColor').value = interface.colors.secondary
-$('info').checked = interface.info
-$('type').value = interface.type
-$('colaDestacada').value = interface.colaDestacada
-interface.exColas.forEach(num => { $$(`#exColas option[value='${num}'`).selected = true })
+$('mainColor').value = UI.colors.main
+$('secondaryColor').value = UI.colors.secondary
+$('info').checked = UI.info
+$('type').value = UI.type
+$('textoColas').checked = UI.colas.mensaje
+$('historial').checked = UI.colas.historial
+$('colaDestacada').value = UI.colas.destacada
+UI.colas.excluir.forEach(num => { $$(`#exColas option[value='${num}'`).selected = true })
 
-updateFieldsFromType(interface.type)
+
+const event = new Event('change')
+$('textoColas').dispatchEvent(event)
+$('type').dispatchEvent(event)

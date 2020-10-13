@@ -1,7 +1,7 @@
 function $(i){return document.getElementById(i)}
 const {remote, ipcRenderer} = require('electron')
-const conf = remote.getGlobal('appConf')
-const ui = remote.getGlobal('interface')
+const conf = remote.getGlobal('APPCONF')
+const UI = remote.getGlobal('UI')
 
 
 /*=============================================
@@ -65,14 +65,16 @@ function avisoPan(mus, cont) {
 =============================================*/
 
 // Aplica CSS basado en la configuracion
-if (!ui.info) { document.body.classList.add('noInfo') }
+if (!UI.info) { document.body.classList.add('noInfo') }
 const css = new CSSStyleSheet()
-css.insertRule(` :root { --main-color: ${ui.colors.main}; } `)
-css.insertRule(` :root { --main-color-light: ${shadeColor(ui.colors.main, 30)}; } `)
-css.insertRule(` :root { --main-color-dark: ${shadeColor(ui.colors.main, -30)}; } `)
-css.insertRule(` :root { --secondary-color: ${ui.colors.secondary}; } `)
-css.insertRule(` :root { --secondary-color-light: ${shadeColor(ui.colors.secondary, 30)}; } `)
-css.insertRule(` :root { --secondary-color-dark: ${shadeColor(ui.colors.secondary, -30)}; } `)
+if (!UI.colas.mensaje) css.insertRule(' #colas .texto { display:none; ')
+// Colores
+css.insertRule(` :root { --main-color: ${UI.colors.main}; } `)
+css.insertRule(` :root { --main-color-light: ${shadeColor(UI.colors.main, 30)}; } `)
+css.insertRule(` :root { --main-color-dark: ${shadeColor(UI.colors.main, -30)}; } `)
+css.insertRule(` :root { --secondary-color: ${UI.colors.secondary}; } `)
+css.insertRule(` :root { --secondary-color-light: ${shadeColor(UI.colors.secondary, 30)}; } `)
+css.insertRule(` :root { --secondary-color-dark: ${shadeColor(UI.colors.secondary, -30)}; } `)
 document.adoptedStyleSheets = [css]
 
 
@@ -84,15 +86,15 @@ pan.onended = async ()=> {
   $('imgPan').remove()
 }
 
-switch(conf.musicType) {
+switch(conf.music.type) {
   case 0: // Hilo integrado
-    music = new Music(conf.musicDir, conf.musicVol, ipcRenderer)
+    music = new Music(conf.music.path, conf.music.volume, ipcRenderer)
     music.updatePlaylist().then( ()=> { music.next() })
     setInterval('music.updatePlaylist()', 60000) // 60 seconds
   break
 
   case 1: //Hilo externo
-    music = new LineIn(conf.musicVol)
+    music = new LineIn(conf.music.volume)
     music.play()
     navigator.mediaDevices.ondevicechange = ()=> { music.play() }
   break
@@ -102,12 +104,12 @@ switch(conf.musicType) {
   break
 }
 
-var content = new Content(conf.contentDir, music, ipcRenderer)
+var content = new Content(conf.media.path, music, ipcRenderer)
 content.updatePlaylist().then( ()=> { content.next() })
 setInterval('content.updatePlaylist()', 60000) // 60 seconds
 
 const ting = conf.avisoSonoro? new Audio('../res/aviso.opus') : false;
-var ws = new wSocket(conf.server.ip, conf.server.port, true, ui, ipcRenderer, ting)
+var ws = new wSocket(conf.server.ip, conf.server.port, true, UI, ipcRenderer, ting)
 ws.onpan = ()=> { avisoPan(music, content) }
 ws.init()
 
@@ -129,19 +131,19 @@ window.onkeyup = function(e) {
     break
     // Shift: Siguiente cancion
     case 16:
-      if (conf.musicType == 0) { music.next(); ipcRenderer.send('log', {origin: 'USER', event: 'SKIP_MUSIC', message: ''}) }
+      if (conf.music.type == 0) { music.next(); ipcRenderer.send('log', {origin: 'USER', event: 'SKIP_MUSIC', message: ''}) }
     break
     case 80:
       content.togglePause()
     break
 
     case 49: // Sube cola 1
-      ws.ws.send( JSON.stringify( {accion: 'sube', cola: 0} ) )
+      ws.ws.send( JSON.stringify( {accion: 'sube', cola: 0, texto: 'test'} ) )
       ipcRenderer.send('log', {origin: 'USER', event: 'SUBE_COLA', message: ''})
     break
 
     case 50: // Baja cola 1
-      ws.ws.send( JSON.stringify( {accion: 'baja', cola: 0} ) )
+      ws.ws.send( JSON.stringify( {accion: 'baja', cola: 0, texto: 'test'} ) )
       ipcRenderer.send('log', {origin: 'USER', event: 'BAJA_COLA', message: ''})
     break
   }

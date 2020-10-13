@@ -12,22 +12,25 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 =            Preferencias            =
 =============================================*/
 
-  const CONFIG_FILE = `${app.getPath('userData')}/appConf.json`
-  const CONFIGUI_FILE = `${app.getPath('userData')}/appConfUI.json`
+  const CONFIG_FILE = `${app.getPath('userData')}/APPCONF.json`
+  const CONFIGUI_FILE = `${app.getPath('userData')}/APPCONFUI.json`
 
   // Defaults
   const DEFAULT_CONFIG = { 
-    contentDir: '/home/cvc/_contenidos',
     logsDir: '/home/cvc/telemetry/logs',
-    exColas: [],
-    musicDir: '/home/cvc/_musica',
-    musicVol: .9,
+    avisoSonoro: true, 
     server: {
       ip:'127.0.0.1',
       port: 3000,
     },
-    avisoSonoro: true,
-    musicType: 0,
+    media: {
+      path: '/home/cvc/_contenidos'
+    },
+    music: {
+      path:'/home/cvc/_musica',
+      volume: .9,
+      type: 0
+    },
     window: {
       type: 0,
       posX: 0,
@@ -40,16 +43,20 @@ var appWin; var configWin; var configServerWin; var configUIWin;
   const DEFAULT_UI = {
     info: true,
     type: 0,
-    colaDestacada: 0,
-    exColas: [],
+    colas: {
+      historial: false,
+      mensaje: false,
+      destacada: 0,
+      excluir: [],
+    },
     colors: {
       main: '#ff0000',
       secondary: '#00ff00'
     }
   }
 
-  if ( !(global.appConf = loadConfigFile(CONFIG_FILE)) )      { global.appConf = DEFAULT_CONFIG }
-  if ( !(global.interface = loadConfigFile(CONFIGUI_FILE)) )  { global.interface = DEFAULT_UI }
+  if ( !(global.APPCONF = loadConfigFile(CONFIG_FILE)) )      { global.APPCONF = DEFAULT_CONFIG }
+  if ( !(global.UI = loadConfigFile(CONFIGUI_FILE)) )  { global.UI = DEFAULT_UI }
 
 /*=====  End of Preferencias  ======*/
 
@@ -115,8 +122,8 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     }
   }
 
-  function savePrefs(prefs, file) {
-    fs.writeFileSync(file, JSON.stringify(prefs), 'utf8')
+  function saveConf(items, file) {
+    fs.writeFileSync(file, JSON.stringify(items), 'utf8')
   }
 
   function loadConfigFile(file) {
@@ -129,8 +136,8 @@ var appWin; var configWin; var configServerWin; var configUIWin;
   }
 
   function restore() {
-    savePrefs(DEFAULT_CONFIG, CONFIG_FILE)
-    savePrefs(DEFAULT_UI, CONFIGUI_FILE)
+    saveConf(DEFAULT_CONFIG, CONFIG_FILE)
+    saveConf(DEFAULT_UI, CONFIGUI_FILE)
     restart() 
   }
 
@@ -153,20 +160,20 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 
   function initApp() {
     let windowOptions = {autoHideMenuBar: true, resizable:false, show: false, webPreferences: { enableRemoteModule: true, nodeIntegration: true}, icon: `${app.getAppPath()}/icon64.png`}
-    if      (appConf.window.type == 0)   { windowOptions.fullscreen = true; windowOptions.resizable = true } // Fullscreen. En linux necesita resizable=true
-    else if (appConf.window.type == 1)   { windowOptions.frame = false; windowOptions.alwaysOnTop = true } // Borderless
+    if      (APPCONF.window.type == 0)   { windowOptions.fullscreen = true; windowOptions.resizable = true } // Fullscreen. En linux necesita resizable=true
+    else if (APPCONF.window.type == 1)   { windowOptions.frame = false; windowOptions.alwaysOnTop = true } // Borderless
     appWin = new BrowserWindow(windowOptions)
 
-    switch (appConf.window.type) {
+    switch (APPCONF.window.type) {
       case 1: // Borderless
-        appWin.setPosition( appConf.window.posX, appConf.window.posY)
+        appWin.setPosition( APPCONF.window.posX, APPCONF.window.posY)
       case 2: // Normal Window
-        appWin.setSize(appConf.window.sizeX, appConf.window.sizeY)
+        appWin.setSize(APPCONF.window.sizeX, APPCONF.window.sizeY)
       break
     }
 
     let tpl
-    switch(interface.type) {
+    switch(UI.type) {
       case 0: // Sin colas
         tpl = '_canalcorp'
       break;
@@ -244,17 +251,17 @@ app.on('ready', initApp)
 =                 IPC signals                 =
 =============================================*/
 
-ipcMain.on('savePrefs', (e, arg) => { 
-  global.appConf = arg
-  savePrefs(arg, CONFIG_FILE)
-  logs.log('MAIN', 'SAVE_PREFS', JSON.stringify(arg))
+ipcMain.on('saveAppConf', (e, arg) => { 
+  global.APPCONF = arg
+  saveConf(arg, CONFIG_FILE)
+  logs.log('MAIN', 'SAVE_APPCONF', JSON.stringify(arg))
   restart()
 })
 
-ipcMain.on('saveInterface', (e, arg) => { 
-  global.interface = arg
-  savePrefs(arg, CONFIGUI_FILE)
-  logs.log('MAIN', 'SAVE_INTERFACE', JSON.stringify(arg))
+ipcMain.on('saveUI', (e, arg) => { 
+  global.UI = arg
+  saveConf(arg, CONFIGUI_FILE)
+  logs.log('MAIN', 'SAVE_UI', JSON.stringify(arg))
 
   //Logo cliente
   if (arg.logo) {
@@ -298,7 +305,7 @@ ipcMain.on('saveDirDialog', (e, arg) => {
 })
 
 // Logs
-var logs = new logger(`${global.appConf.logsDir}/`, appName)
+var logs = new logger(`${global.APPCONF.logsDir}/`, appName)
 ipcMain.on('log', (e, arg) =>       { logs.log(arg.origin, arg.event, arg.message) })
 ipcMain.on('logError', (e, arg) =>  { logs.error(arg.origin, arg.error, arg.message) })
 

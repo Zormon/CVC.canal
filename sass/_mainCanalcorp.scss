@@ -16,26 +16,7 @@ body.main {
 
     *::selection { background: none; }
 
-    .modalBox {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100vw; height: 100vh;
-        display: flex;
-        align-items: flex-end;
-        justify-content: center;
-        text-align: center;
-        z-index: 3;
 
-        > div {
-            width: 24%;
-            height: 19%;
-            color: black;
-            background: white;
-            box-shadow: 0 0 20px 0 red;
-            border-radius: 10px;
-            font-size: .8em;
-        }
-    }
 
     #media {
         width: 100%;

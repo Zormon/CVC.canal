@@ -4,34 +4,34 @@ function $$$(id)    { return document.querySelectorAll(id)  }
 
 const remote = require('electron').remote
 const { ipcRenderer } = require('electron')
-var prefs = remote.getGlobal('appConf')
-var interface = remote.getGlobal('interface')
+var CONF = remote.getGlobal('APPCONF')
+var UI = remote.getGlobal('UI')
 
-function savePreferences() {
-    prefs.contentDir = $('contentDir').value
-    prefs.logsDir = $('logsDir').value
+function saveConf() {
+    CONF.media.path = $('contentDir').value
+    CONF.logsDir = $('logsDir').value
 
-    prefs.server.ip = $('serverIp').value != ''? $('serverIp').value : $('serverIp').placeholder
-    prefs.server.port = $('serverPort').value != ''? parseInt($('serverPort').value) : parseInt($('serverPort').placeholder)
+    CONF.server.ip = $('serverIp').value != ''? $('serverIp').value : $('serverIp').placeholder
+    CONF.server.port = $('serverPort').value != ''? parseInt($('serverPort').value) : parseInt($('serverPort').placeholder)
 
-    prefs.musicDir = $('musicDir').value
-    prefs.musicVol = parseFloat($('musicVol').value)
-    prefs.musicType = parseInt($('musicType').value)
-    prefs.avisoSonoro = $('avisoSonoro').checked
+    CONF.music.path = $('musicDir').value
+    CONF.music.volume = parseFloat($('musicVol').value)
+    CONF.music.type = parseInt($('musicType').value)
+    CONF.avisoSonoro = $('avisoSonoro').checked
 
-    prefs.window.type = parseInt($('windowType').value)
-    prefs.window.sizeX = $('windowSizeX').value != ''? parseInt($('windowSizeX').value) : parseInt($('windowSizeX').placeholder)
-    prefs.window.sizeY = $('windowSizeY').value != ''? parseInt($('windowSizeY').value) : parseInt($('windowSizeY').placeholder)
-    prefs.window.posX = $('windowPosX').value != ''? parseInt($('windowPosX').value) : parseInt($('windowPosX').placeholder)
-    prefs.window.posY = $('windowPosY').value != ''? parseInt($('windowPosY').value) : parseInt($('windowPosY').placeholder)
+    CONF.window.type = parseInt($('windowType').value)
+    CONF.window.sizeX = $('windowSizeX').value != ''? parseInt($('windowSizeX').value) : parseInt($('windowSizeX').placeholder)
+    CONF.window.sizeY = $('windowSizeY').value != ''? parseInt($('windowSizeY').value) : parseInt($('windowSizeY').placeholder)
+    CONF.window.posX = $('windowPosX').value != ''? parseInt($('windowPosX').value) : parseInt($('windowPosX').placeholder)
+    CONF.window.posY = $('windowPosY').value != ''? parseInt($('windowPosY').value) : parseInt($('windowPosY').placeholder)
 
-    ipcRenderer.send('savePrefs', prefs )
+    ipcRenderer.send('saveAppConf', CONF )
 }
 
 $('save').onclick = (e)=> {
     e.preventDefault()
     if ( $('config').checkValidity() ) {
-        savePreferences()
+        saveConf()
     } else { 
         $('config').reportValidity()
     }
@@ -85,20 +85,20 @@ $('windowType').onchange = (e) => {
 }
 
 // Initialization
-$('contentDir').value = prefs.contentDir
-$('musicDir').value = prefs.musicDir
-$('logsDir').value = prefs.logsDir
-$('serverIp').value = prefs.server.ip
-$('serverPort').value = prefs.server.port
-$('musicVol').value = prefs.musicVol
-$('musicType').value = prefs.musicType
-$('avisoSonoro').checked = prefs.avisoSonoro; if (interface.type == 0) { $('avisoSonoro').disabled = true }
+$('contentDir').value = CONF.media.path
+$('musicDir').value = CONF.music.path
+$('logsDir').value = CONF.logsDir
+$('serverIp').value = CONF.server.ip
+$('serverPort').value = CONF.server.port
+$('musicVol').value = CONF.music.volume
+$('musicType').value = CONF.music.type
+$('avisoSonoro').checked = CONF.avisoSonoro; if (UI.type == 0) { $('avisoSonoro').disabled = true }
 
-$('windowType').value = prefs.window.type
-$('windowSizeX').value = prefs.window.sizeX
-$('windowSizeY').value = prefs.window.sizeY
-$('windowPosX').value = prefs.window.posX
-$('windowPosY').value = prefs.window.posY
+$('windowType').value = CONF.window.type
+$('windowSizeX').value = CONF.window.sizeX
+$('windowSizeY').value = CONF.window.sizeY
+$('windowPosX').value = CONF.window.posX
+$('windowPosY').value = CONF.window.posY
 
 const event = new Event('change')
 $('musicType').dispatchEvent(event)

@@ -5,7 +5,7 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)) }
 
 const remote = require('electron').remote
 const { ipcRenderer } = require('electron')
-const conf = remote.getGlobal('appConf')
+const conf = remote.getGlobal('APPCONF')
 
 var colas = {}
 

@@ -9,15 +9,45 @@
   <body class="config">
       <form id="configUI" class="flex">
         <div class="col">
-          <fieldset id="turnos">
-            <legend>Turnos</legend>
-            <label for="type">Posición</label>
+          <div>
+            <label for="type">Tipo de interfaz</label>
             <select id="type">
               <option value="0">Sin turnos</option>
               <option value="1">Derecha</option>
               <option value="2">Izquierda</option>
               <option value="3">Abajo</option>
             </select>
+          </div>
+
+          <div>
+            <input type="checkbox" id="info">
+            <label for="info">Barra informativa</label>
+          </div>
+
+          <fieldset id="turnos">
+            <legend>Turnos</legend>
+
+            <div>
+              <input type="checkbox" id="textoColas">
+              <label for="textoColas">Texto de colas</label>
+            </div>
+
+            <div>
+              <input type="checkbox" id="historial">
+              <label for="historial">Historial</label>
+            </div>
+            
+            <div>
+              <label for="exColas">Excluir colas</label>
+              <select id="exColas" size="6" multiple>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+              </select>
+            </div>
 
             <div>
               <label for="colaDestacada">Cola destacada</label>
@@ -31,24 +61,9 @@
                 <option value="6">6</option>
               </select>
             </div>
-              
-            <div>
-              <label for="exColas">Excluir colas</label>
-              <select id="exColas" size="6" multiple>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-                <option value="6">6</option>
-              </select>
-            </div>
           </fieldset>
 
-          <div>
-            <input type="checkbox" id="info">
-            <label for="info">Barra informativa</label>
-          </div>
+
         </div>
 
         <div class="col">
