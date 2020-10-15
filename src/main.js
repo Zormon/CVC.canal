@@ -166,7 +166,9 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 
     switch (APPCONF.window.type) {
       case 1: // Borderless
+        appWin.setSize(APPCONF.window.sizeX, APPCONF.window.sizeY)
         appWin.setPosition( APPCONF.window.posX, APPCONF.window.posY)
+      break
       case 2: // Normal Window
         appWin.setSize(APPCONF.window.sizeX, APPCONF.window.sizeY)
       break
