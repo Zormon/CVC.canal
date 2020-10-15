@@ -159,16 +159,14 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 =============================================*/
 
   function initApp() {
-    let windowOptions = {autoHideMenuBar: true, resizable:false, show: false, webPreferences: { enableRemoteModule: true, nodeIntegration: true}, icon: `${app.getAppPath()}/icon64.png`}
-    if      (APPCONF.window.type == 0)   { windowOptions.fullscreen = true; windowOptions.resizable = true } // Fullscreen. En linux necesita resizable=true
+    let windowOptions = {autoHideMenuBar: true, resizable:true, show: false, webPreferences: { enableRemoteModule: true, nodeIntegration: true}, icon: `${app.getAppPath()}/icon64.png`}
+    if      (APPCONF.window.type == 0)   { windowOptions.fullscreen = true }
     else if (APPCONF.window.type == 1)   { windowOptions.frame = false; windowOptions.alwaysOnTop = true } // Borderless
     appWin = new BrowserWindow(windowOptions)
 
     switch (APPCONF.window.type) {
       case 1: // Borderless
-        appWin.setSize(APPCONF.window.sizeX, APPCONF.window.sizeY)
         appWin.setPosition( APPCONF.window.posX, APPCONF.window.posY)
-      break
       case 2: // Normal Window
         appWin.setSize(APPCONF.window.sizeX, APPCONF.window.sizeY)
       break
@@ -194,6 +192,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     appWin.setTitle(appName)
     appWin.on('page-title-updated', (e)=>{ e.preventDefault()})
     Menu.setApplicationMenu( Menu.buildFromTemplate(menu) )
+    appWin.setResizable(false)
     appWin.show()
     appWin.on('closed', () => { logs.log('MAIN','QUIT',''); app.quit() })
 
