@@ -10,6 +10,8 @@ var UI = remote.getGlobal('UI')
 function saveConfigUI() {
     UI.colors.main = $('mainColor').value
     UI.colors.secondary = $('secondaryColor').value
+    UI.colas.BGtype = parseInt($('asideBGType').value)
+    UI.colors.aside = $('asideBGColor').value
     UI.info = $('info').checked
     UI.type = parseInt($('type').value)
     UI.colas.historial = $('historial').checked
@@ -26,6 +28,11 @@ function saveConfigUI() {
     // Imagen de barra
     if (typeof $('barImg').files[0] != 'undefined') {
         UI.barImg = {name: 'barImage.png', file: $('canvasBarImg').toDataURL("image/png").substring(22)}
+    }
+
+    // Imagen de barra
+    if (typeof $('asideBGimg').files[0] != 'undefined') {
+        UI.barImg = {name: 'asideBG.png', file: $('canvasAsideBGimg').toDataURL("image/png").substring(22)}
     }
 
     ipcRenderer.send('saveUI', UI )
@@ -61,17 +68,30 @@ function clearCanvas(canvas) {
     $('type').onchange = (e) => { 
         switch (parseInt(e.currentTarget.value)) {
             case 0: // Sin colas
-                $('turnos').disabled = true
+                $('turnos').style.display = 'none'
             break
             case 3: // Abajo
-                $('turnos').disabled = false
-                $('colaDestacada').disabled = false
-                $('exColas').disabled = false
+                $('turnos').style.display = ''
+                $('colaDestacada').parentElement.style.display = ''
+                $('exColas').parentElement.style.display = ''
             break
             default:
-                $('turnos').disabled = false
-                $('colaDestacada').disabled = true
-                $('exColas').disabled = false
+                $('turnos').style.display = ''
+                $('colaDestacada').parentElement.style.display = 'none'
+                $('exColas').parentElement.style.display = ''
+            break
+        }
+    }
+
+    $('asideBGType').onchange = (e) => {
+        switch (parseInt(e.currentTarget.value)) {
+            case 1: // Color
+                $('asideBGColor').parentElement.style.display = ''
+                $('asideBGimg').parentElement.style.display = 'none'
+            break
+            case 2: // Imagen
+                $('asideBGColor').parentElement.style.display = 'none'
+                $('asideBGimg').parentElement.style.display = ''
             break
         }
     }
@@ -84,6 +104,11 @@ function clearCanvas(canvas) {
     $('barImg').onchange = (e) => { 
         if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(e.currentTarget, $('canvasBarImg'), 1000, 180) } 
         else                                                    { clearCanvas($('canvasBarImg')) }
+    }
+
+    $('asideBGimg').onchange = (e) => { 
+        if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(e.currentTarget, $('canvasAsideBGimg'), 220, 720) } 
+        else                                                    { clearCanvas($('canvasAsideBGimg')) }
     }
 
     $('save').onclick = (e)=> {
@@ -109,6 +134,8 @@ function clearCanvas(canvas) {
 // Initialization
 $('mainColor').value = UI.colors.main
 $('secondaryColor').value = UI.colors.secondary
+$('asideBGType').value = UI.colas.BGtype
+$('asideBGColor').value = UI.colors.aside
 $('info').checked = UI.info
 $('type').value = UI.type
 $('textoColas').checked = UI.colas.mensaje
@@ -120,3 +147,4 @@ UI.colas.excluir.forEach(num => { $$(`#exColas option[value='${num}'`).selected 
 const event = new Event('change')
 $('textoColas').dispatchEvent(event)
 $('type').dispatchEvent(event)
+$('asideBGType').dispatchEvent(event)

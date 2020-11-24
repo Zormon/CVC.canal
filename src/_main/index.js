@@ -75,6 +75,17 @@ css.insertRule(` :root { --main-color-dark: ${shadeColor(UI.colors.main, -30)}; 
 css.insertRule(` :root { --secondary-color: ${UI.colors.secondary}; } `)
 css.insertRule(` :root { --secondary-color-light: ${shadeColor(UI.colors.secondary, 30)}; } `)
 css.insertRule(` :root { --secondary-color-dark: ${shadeColor(UI.colors.secondary, -30)}; } `)
+css.insertRule(` :root { --turnos-color: ${UI.colors.aside}; } `)
+css.insertRule(` :root { --turnos-color-light: ${shadeColor(UI.colors.aside, 30)}; } `)
+switch (UI.colas.BGtype) {
+  case 1: // Color
+    css.insertRule(` #colas { background: radial-gradient( circle, var(--turnos-color-light), var(--turnos-color));} `)
+  break
+  case 2: // Img
+    css.insertRule(` #colas { background: url(../../files/asideBG.png) 0 0 no-repeat; background-size: 100% 100%} `)
+  break
+}
+
 document.adoptedStyleSheets = [css]
 
 

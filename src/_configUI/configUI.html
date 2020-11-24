@@ -67,17 +67,20 @@
         </div>
 
         <div class="col">
-          <fieldset id="custom">
-            <legend>Personalización</legend>
+          <fieldset id="colors">
+            <legend>Colores</legend>
             <div>
-              <label for="mainColor">Color principal</label>
+              <label for="mainColor">Principal</label>
               <input type="color" id="mainColor">
             </div>
             <div>
-              <label for="secondaryColor">Color secundario</label>
+              <label for="secondaryColor">Secundario</label>
               <input type="color" id="secondaryColor">
             </div>
+          </fieldset>
 
+          <fieldset>
+            <legend>Imagenes y logotipos</legend>
             <div>
               <label for="footerLogo">Logo cliente (1000px x 250px)</label>
               <input type="file" id="footerLogo" accept="image/png">
@@ -89,6 +92,25 @@
               <input type="file" id="barImg" accept="image/png">
             </div>
             <div><canvas id="canvasBarImg"></canvas></div>
+
+            <div>
+              <label for="asideBGType">Fondo de colas</label>
+              <select id="asideBGType">
+                <option value="1">Color</option>
+                <option value="2">Imagen</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="asideBGColor">Color</label>
+              <input type="color" id="asideBGColor">
+            </div>
+
+            <div>
+              <label for="asideBGimg">Imagen (220px x 720px aprox)</label>
+              <input type="file" id="asideBGimg" accept="image/png">
+              <div><canvas id="canvasAsideBGimg"></canvas></div>
+            </div>
           </fieldset>
 
           <button id="save">Aplicar</button>

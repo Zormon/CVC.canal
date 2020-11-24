@@ -43,7 +43,7 @@ body.config {
             }
         }
 
-        #canvasLogo, #canvasBarImg { background: url("alpha.png") repeat }
+        #canvasLogo, #canvasBarImg, #canvasAsideBGimg { background: url("alpha.png") repeat }
 
         #canvasLogo { 
             width: 240px;
@@ -53,6 +53,11 @@ body.config {
         #canvasBarImg { 
             width: 240px;
             height: 43px;
+        }
+
+        #canvasAsideBGimg { 
+            width: 30px;
+            height: 100;
         }
     }
 

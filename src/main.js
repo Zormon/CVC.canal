@@ -17,7 +17,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 
   // Defaults
   const DEFAULT_CONFIG = { 
-    logsDir: '/home/cvc/telemetry/logs',
+    logsDir: '/home/cvc/telemetry/apps',
     avisoSonoro: true, 
     server: {
       ip:'127.0.0.1',
@@ -48,10 +48,12 @@ var appWin; var configWin; var configServerWin; var configUIWin;
       mensaje: false,
       destacada: 0,
       excluir: [],
+      BGtype: 1,
     },
     colors: {
       main: '#ff0000',
-      secondary: '#00ff00'
+      secondary: '#00ff00',
+      aside: '#000000'
     }
   }
 
@@ -213,7 +215,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 
     // Ventana de personalizacion de interfaz
     function configUI() {
-      configUIWin = new BrowserWindow({width: 700, height: 500, show:false, alwaysOnTop: true, resizable: false, webPreferences: { enableRemoteModule: true, nodeIntegration: true, parent: appWin }})
+      configUIWin = new BrowserWindow({width: 700, height: 720, show:false, alwaysOnTop: true, resizable: false, webPreferences: { enableRemoteModule: true, nodeIntegration: true, parent: appWin }})
       configUIWin.loadFile(`${__dirname}/_configUI/configUI.html`)
       configUIWin.setMenu( null )
       configUIWin.show()
