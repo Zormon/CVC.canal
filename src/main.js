@@ -1,5 +1,5 @@
 const appName = 'canal'
-const { app, BrowserWindow, Menu, ipcMain, dialog } = require('electron')
+const { app, BrowserWindow, Menu, ipcMain, dialog, screen } = require('electron')
 const fs = require("fs")
 const path = require('path')
 const logger = require('./log.js')
@@ -167,6 +167,9 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     appWin = new BrowserWindow(windowOptions)
 
     switch (APPCONF.window.type) {
+      case 0: // Fullscreen
+        screen.on('display-metrics-changed', restart )
+      break
       case 1: // Borderless
         appWin.setPosition( APPCONF.window.posX, APPCONF.window.posY)
       case 2: // Normal Window
