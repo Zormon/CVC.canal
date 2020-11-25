@@ -36,7 +36,8 @@ var appWin; var configWin; var configServerWin; var configUIWin;
       posX: 0,
       posY: 0,
       sizeX: 1280,
-      sizeY: 720
+      sizeY: 720,
+      alwaysOnTop: true
     }
   }
 
@@ -163,7 +164,8 @@ var appWin; var configWin; var configServerWin; var configUIWin;
   function initApp() {
     let windowOptions = {autoHideMenuBar: true, resizable:true, show: false, webPreferences: { enableRemoteModule: true, nodeIntegration: true}, icon: `${app.getAppPath()}/icon64.png`}
     if      (APPCONF.window.type == 0)   { windowOptions.fullscreen = true }
-    else if (APPCONF.window.type == 1)   { windowOptions.frame = false; windowOptions.alwaysOnTop = true } // Borderless
+    else if (APPCONF.window.type == 1 || APPCONF.window.type == 3)   { windowOptions.frame = false } // Borderless
+    if (APPCONF.window.type != 0) { windowOptions.alwaysOnTop = APPCONF.window.alwaysOnTop }
     appWin = new BrowserWindow(windowOptions)
 
     switch (APPCONF.window.type) {
@@ -174,6 +176,16 @@ var appWin; var configWin; var configServerWin; var configUIWin;
         appWin.setPosition( APPCONF.window.posX, APPCONF.window.posY)
       case 2: // Normal Window
         appWin.setSize(APPCONF.window.sizeX, APPCONF.window.sizeY)
+      break
+      case 3: // fullBorderless
+        let width=0, height=0, displays = screen.getAllDisplays()
+        displays.forEach(d => { 
+          width += d.bounds.width
+          height = (height<d.bounds.height)? d.bounds.height : height
+        })
+
+        appWin.setPosition(0,0)
+        appWin.setSize(width,height)
       break
     }
 
@@ -206,7 +218,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
   }
 
   function config() {
-    configWin = new BrowserWindow({width: 720, height: 420, show:false, alwaysOnTop: true, webPreferences: { enableRemoteModule: true, nodeIntegration: true, parent: appWin }})
+    configWin = new BrowserWindow({width: 720, height: 480, show:false, alwaysOnTop: true, webPreferences: { enableRemoteModule: true, nodeIntegration: true, parent: appWin }})
     configWin.loadFile(`${__dirname}/_config/config.html`)
     configWin.setMenu( null )
     configWin.resizable = false
