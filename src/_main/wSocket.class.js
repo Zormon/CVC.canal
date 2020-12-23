@@ -3,11 +3,12 @@ function $$(id)     { return document.querySelector(id)     }
 function isFunction(f) {return f && {}.toString.call(f)==='[object Function]'}
 
 class wSocket {
-    constructor(ip, port, pan, UI, ipcR, ting) {
+    constructor(ip, port, pan, UI, ting, logger) {
         this.ip = ip
         this.port = port
         this.UI = UI
-        this.ipc = ipcR
+        this.log = logger.std
+        this.logError = logger.error
         this.ting = ting
         this.pan = pan
         this.onpan = null
@@ -23,15 +24,15 @@ class wSocket {
             switch (msg.accion) {
                 case 'spread':
                     if (this.UI.type != 0) { this.spread(msg.colas, msg.turnos) }
-                    this.ipc.send('log', {origin: 'TURNOMATIC', event: 'SPREAD', message: `Colas: ${JSON.stringify(msg.colas)}, Turnos: ${JSON.stringify(msg.turnos)}, Tickets: ${JSON.stringify(msg.tickets)}`})
+                    this.log({origin: 'TURNOMATIC', event: 'SPREAD', message: `Colas: ${JSON.stringify(msg.colas)}, Turnos: ${JSON.stringify(msg.turnos)}, Tickets: ${JSON.stringify(msg.tickets)}`})
                 break
                 case 'update':
                     if (this.UI.type != 0) { this.update(msg.cola, msg.numero, msg.texto) }
-                    this.ipc.send('log', {origin: 'TURNOMATIC', event: 'UPDATE', message: `Cola: ${msg.cola}, Numero: ${msg.numero}, Texto: ${msg.texto}`})
+                    this.log({origin: 'TURNOMATIC', event: 'UPDATE', message: `Cola: ${msg.cola}, Numero: ${msg.numero}, Texto: ${msg.texto}`})
                 break
                 case 'pan':
                     if ( isFunction(this.onpan) ) { this.onpan() }
-                    this.ipc.send('log', {origin: 'TURNOMATIC', event: 'PAN', message: `Aviso del pan`})
+                    this.log({origin: 'TURNOMATIC', event: 'PAN', message: `Aviso del pan`})
                 break
                 default:
                     modalBox('socketError', false)
@@ -135,8 +136,8 @@ class wSocket {
             _this.init()
             _this.check()
 
-            modalBox('socketError', 'error', 'ERROR DE CONEXIÓN', `Conectando a ${remote.getGlobal('APPCONF').server.ip}`)
-            this.ipc.send('logError', {origin: 'TURNOMATIC', error: 'OFFLINE', message: `Conectando a ${remote.getGlobal('APPCONF').server.ip}`})
+            modalBox('socketError', 'error', 'ERROR DE CONEXIÓN', `Conectando a ${this.ip}`)
+            this.logError({origin: 'TURNOMATIC', error: 'OFFLINE', message: `Conectando a ${this.ip}`})
             
         }, 5000)
       }

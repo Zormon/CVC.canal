@@ -1,7 +1,7 @@
 function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)) }
 
 class Music {
-    constructor(dir, maxVolume, ipcR) {
+    constructor(dir, maxVolume, logger) {
         this.canciones = null
         this.dir = dir
         this.maxVolume = maxVolume
@@ -11,7 +11,8 @@ class Music {
         this.el.oncanplaythrough = ()=> { this.el.play() }
         this.el.volume = maxVolume
         this.isFading = false
-        this.ipc = ipcR
+        this.log = logger.std
+        this.logError = logger.error
 
         document.body.appendChild(this.el)
     }
@@ -36,7 +37,7 @@ class Music {
           this.el.src = `file://${this.dir}/files/${this.canciones[next].archivo}`
           localStorage.setItem('nextMusic', ++next)
 
-          this.ipc.send('log', {origin: 'MUSIC', event: 'PLAY', message:  this.canciones[next].titulo})
+          this.log({origin: 'MUSIC', event: 'PLAY', message:  this.canciones[next].titulo})
         }
       }
 

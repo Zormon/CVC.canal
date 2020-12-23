@@ -1,12 +1,4 @@
-function $(id)      { return document.getElementById(id)    }
-function $$(id)     { return document.querySelector(id)     }
-function $$$(id)    { return document.querySelectorAll(id)  }
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)) }
-
-const remote = require('electron').remote
-const { ipcRenderer } = require('electron')
-const conf = remote.getGlobal('APPCONF')
-
+var CONF = window.ipc.get.appConf()
 var colas = {}
 
 async function saveConfig() {
@@ -16,7 +8,7 @@ async function saveConfig() {
         cols.push( col ) 
     })
 
-    let data = await fetch(`http://${conf.server.ip}:${conf.server.port}/setColas`, {
+    let data = await fetch(`http://${CONF.server.ip}:${CONF.server.port}/setColas`, {
         method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json'},
         body: JSON.stringify( cols )
       }).then( resp => resp.json() )
@@ -56,7 +48,7 @@ function printColas() {
 
 
 // Initialization
-fetch(`http://${conf.server.ip}:${conf.server.port}/getColas`).then( resp => resp.json() )
+fetch(`http://${CONF.server.ip}:${CONF.server.port}/getColas`).then( resp => resp.json() )
 .then( (data)=> {
         $('ncolas').value = data.colas.length
         colas = data.colas
@@ -68,7 +60,7 @@ fetch(`http://${conf.server.ip}:${conf.server.port}/getColas`).then( resp => res
             e.preventDefault()
             if ( $('config').checkValidity() ) {
                 if ( await saveConfig() == true) {
-                    remote.getCurrentWindow().close()           
+                    window.ipc.win.close('configServer')
                 }
             } else { 
                 $('config').reportValidity()

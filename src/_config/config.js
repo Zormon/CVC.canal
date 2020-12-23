@@ -1,11 +1,5 @@
-function $(id)      { return document.getElementById(id)    }
-function $$(id)     { return document.querySelector(id)     }
-function $$$(id)    { return document.querySelectorAll(id)  }
-
-const remote = require('electron').remote
-const { ipcRenderer } = require('electron')
-var CONF = remote.getGlobal('APPCONF')
-var UI = remote.getGlobal('UI')
+var CONF = window.ipc.get.appConf()
+var UI = window.ipc.get.interface()
 
 function saveConf() {
     CONF.media.path = $('contentDir').value
@@ -20,13 +14,13 @@ function saveConf() {
     CONF.avisoSonoro = $('avisoSonoro').checked
 
     CONF.window.type = parseInt($('windowType').value)
-    CONF.window.sizeX = $('windowSizeX').value != ''? parseInt($('windowSizeX').value) : parseInt($('windowSizeX').placeholder)
-    CONF.window.sizeY = $('windowSizeY').value != ''? parseInt($('windowSizeY').value) : parseInt($('windowSizeY').placeholder)
+    CONF.window.width = $('windowSizeX').value != ''? parseInt($('windowSizeX').value) : parseInt($('windowSizeX').placeholder)
+    CONF.window.height = $('windowSizeY').value != ''? parseInt($('windowSizeY').value) : parseInt($('windowSizeY').placeholder)
     CONF.window.posX = $('windowPosX').value != ''? parseInt($('windowPosX').value) : parseInt($('windowPosX').placeholder)
     CONF.window.posY = $('windowPosY').value != ''? parseInt($('windowPosY').value) : parseInt($('windowPosY').placeholder)
     CONF.window.alwaysOnTop = $('alwaysOnTop').checked
 
-    ipcRenderer.send('saveAppConf', CONF )
+    window.ipc.save.appConf( CONF )
 }
 
 $('save').onclick = (e)=> {
@@ -39,17 +33,17 @@ $('save').onclick = (e)=> {
 }
 
 $('contentDir').onclick = ()=> {
-    let dir = ipcRenderer.sendSync('saveDirDialog', {dir: $('contentDir').value, file:'lista.xml'})
+    let dir = window.ipc.dialog.saveDir({dir: $('contentDir').value, file:'lista.xml'})
     $('contentDir').value = dir
 }
 
 $('logsDir').onclick = ()=> {
-    let dir = ipcRenderer.sendSync('saveDirDialog', {dir: $('logsDir').value, file:false})
+    let dir = window.ipc.dialog.saveDir({dir: $('logsDir').value, file:false})
     $('logsDir').value = dir
 }
 
 $('musicDir').onclick = ()=> {
-    let dir = ipcRenderer.sendSync('saveDirDialog', {dir: $('musicDir').value, file:'lista.xml'})
+    let dir = window.ipc.dialog.saveDir({dir: $('musicDir').value, file:'lista.xml'})
     $('musicDir').value = dir
 }
 
@@ -82,8 +76,8 @@ $('windowType').onchange = (e) => {
         break
 
         case 2: // Normal
-            $('windowSize').parentElement.style.display = 'none'
-            $('windowPos').parentElement.style.display = ''
+            $('windowSize').parentElement.style.display = ''
+            $('windowPos').parentElement.style.display = 'none'
             $('alwaysOnTop').parentElement.style.display = ''
     }
 }
@@ -100,8 +94,8 @@ $('avisoSonoro').checked = CONF.avisoSonoro; if (UI.type == 0) { $('avisoSonoro'
 
 
 $('windowType').value = CONF.window.type
-$('windowSizeX').value = CONF.window.sizeX
-$('windowSizeY').value = CONF.window.sizeY
+$('windowSizeX').value = CONF.window.width
+$('windowSizeY').value = CONF.window.height
 $('windowPosX').value = CONF.window.posX
 $('windowPosY').value = CONF.window.posY
 $('alwaysOnTop').checked = CONF.window.alwaysOnTop

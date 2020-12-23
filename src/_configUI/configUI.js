@@ -1,11 +1,4 @@
-function $(id)      { return document.getElementById(id)    }
-function $$(id)     { return document.querySelector(id)     }
-function $$$(id)    { return document.querySelectorAll(id)  }
-
-const remote = require('electron').remote
-const { ipcRenderer } = require('electron')
-
-var UI = remote.getGlobal('UI')
+var UI = window.ipc.get.interface()
 
 function saveConfigUI() {
     UI.colors.main = $('mainColor').value
@@ -35,7 +28,7 @@ function saveConfigUI() {
         UI.barImg = {name: 'asideBG.png', file: $('canvasAsideBGimg').toDataURL("image/png").substring(22)}
     }
 
-    ipcRenderer.send('saveUI', UI )
+    window.ipc.save.interface(UI)
 }
 
 function canvasThumb(event, canvas, width, height) {

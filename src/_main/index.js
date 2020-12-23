@@ -1,8 +1,5 @@
-function $(i){return document.getElementById(i)}
-const {remote, ipcRenderer} = require('electron')
-const conf = remote.getGlobal('APPCONF')
-const UI = remote.getGlobal('UI')
-
+const conf = window.ipc.get.appConf()
+const UI = window.ipc.get.interface()
 
 /*=============================================
 =            Funciones            =
@@ -99,7 +96,7 @@ pan.onended = async ()=> {
 
 switch(conf.music.type) {
   case 0: // Hilo integrado
-    music = new Music(conf.music.path, conf.music.volume, ipcRenderer)
+    music = new Music(conf.music.path, conf.music.volume, window.ipc.logger)
     music.updatePlaylist().then( ()=> { music.next() })
     setInterval('music.updatePlaylist()', 60000) // 60 seconds
   break
@@ -115,12 +112,12 @@ switch(conf.music.type) {
   break
 }
 
-var content = new Content(conf.media.path, music, ipcRenderer)
+var content = new Content(conf.media.path, music, window.ipc.logger)
 content.updatePlaylist().then( ()=> { content.next() })
 setInterval('content.updatePlaylist()', 60000) // 60 seconds
 
 const ting = conf.avisoSonoro? new Audio('../res/aviso.opus') : false;
-var ws = new wSocket(conf.server.ip, conf.server.port, true, UI, ipcRenderer, ting)
+var ws = new wSocket(conf.server.ip, conf.server.port, true, UI, ting, window.ipc.logger)
 ws.onpan = ()=> { avisoPan(music, content) }
 ws.init()
 
@@ -131,18 +128,17 @@ setInterval(time, 5000)
 
 
 
-
 // Atajos de teclado para testeo
-window.onkeyup = function(e) {
+window.onkeyup = (e) => {
   switch (e.keyCode) {
     // Enter: Siguiente contenido
     case 13:
       content.next()
-      ipcRenderer.send('log', {origin: 'USER', event: 'SKIP_CONTENT', message: ''})
+      window.ipc.logger.std({origin: 'USER', event: 'SKIP_CONTENT', message: ''})
     break
     // Shift: Siguiente cancion
     case 16:
-      if (conf.music.type == 0) { music.next(); ipcRenderer.send('log', {origin: 'USER', event: 'SKIP_MUSIC', message: ''}) }
+      if (conf.music.type == 0) { music.next(); window.ipc.logger.std({origin: 'USER', event: 'SKIP_MUSIC', message: ''}) }
     break
     case 80:
       content.togglePause()
@@ -150,12 +146,12 @@ window.onkeyup = function(e) {
 
     case 49: // Sube cola 1
       ws.ws.send( JSON.stringify( {accion: 'sube', cola: 0, texto: 'test'} ) )
-      ipcRenderer.send('log', {origin: 'USER', event: 'SUBE_COLA', message: ''})
+      window.ipc.logger.std({origin: 'USER', event: 'SUBE_COLA', message: ''})
     break
 
     case 50: // Baja cola 1
       ws.ws.send( JSON.stringify( {accion: 'baja', cola: 0, texto: 'test'} ) )
-      ipcRenderer.send('log', {origin: 'USER', event: 'BAJA_COLA', message: ''})
+      window.ipc.logger.std({origin: 'USER', event: 'BAJA_COLA', message: ''})
     break
   }
 }

@@ -35,8 +35,8 @@ var appWin; var configWin; var configServerWin; var configUIWin;
       type: 0,
       posX: 0,
       posY: 0,
-      sizeX: 1280,
-      sizeY: 720,
+      width: 1280,
+      height: 720,
       alwaysOnTop: true
     }
   }
@@ -162,7 +162,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 =============================================*/
 
   function initApp() {
-    let windowOptions = {autoHideMenuBar: true, resizable:true, show: false, webPreferences: { enableRemoteModule: true, nodeIntegration: true}, icon: `${app.getAppPath()}/icon64.png`}
+    let windowOptions = {autoHideMenuBar: true, resizable:true, show: false, webPreferences: { contextIsolation: true, preload: path.join(__dirname, "preload.js") }, icon: `${app.getAppPath()}/icon64.png`}
     if      (APPCONF.window.type == 0)   { windowOptions.fullscreen = true }
     else if (APPCONF.window.type == 1 || APPCONF.window.type == 3)   { windowOptions.frame = false } // Borderless
     if (APPCONF.window.type != 0) { windowOptions.alwaysOnTop = APPCONF.window.alwaysOnTop }
@@ -175,7 +175,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
       case 1: // Borderless
         appWin.setPosition( APPCONF.window.posX, APPCONF.window.posY)
       case 2: // Normal Window
-        appWin.setSize(APPCONF.window.sizeX, APPCONF.window.sizeY)
+        appWin.setSize(APPCONF.window.width, APPCONF.window.height)
       break
       case 3: // fullBorderless
         let width=0, height=0, displays = screen.getAllDisplays()
@@ -214,11 +214,11 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     appWin.on('closed', () => { logs.log('MAIN','QUIT',''); app.quit() })
 
     logs.log('MAIN','START','')
-    //appWin.webContents.openDevTools()
+    appWin.webContents.openDevTools()
   }
 
   function config() {
-    configWin = new BrowserWindow({width: 720, height: 480, show:false, alwaysOnTop: true, webPreferences: { enableRemoteModule: true, nodeIntegration: true, parent: appWin }})
+    configWin = new BrowserWindow({width: 720, height: 480, show:false, alwaysOnTop: true, webPreferences: { contextIsolation: true, preload: path.join(__dirname, "preload.js"), parent: appWin }})
     configWin.loadFile(`${__dirname}/_config/config.html`)
     configWin.setMenu( null )
     configWin.resizable = false
@@ -230,23 +230,23 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 
     // Ventana de personalizacion de interfaz
     function configUI() {
-      configUIWin = new BrowserWindow({width: 700, height: 720, show:false, alwaysOnTop: true, resizable: false, webPreferences: { enableRemoteModule: true, nodeIntegration: true, parent: appWin }})
+      configUIWin = new BrowserWindow({width: 700, height: 720, show:false, alwaysOnTop: true, resizable: false, webPreferences: { contextIsolation: true, preload: path.join(__dirname, "preload.js"), parent: appWin }})
       configUIWin.loadFile(`${__dirname}/_configUI/configUI.html`)
       configUIWin.setMenu( null )
       configUIWin.show()
       
       configUIWin.on('closed', () => { configUIWin = null })
-      //configUIWin.webContents.openDevTools()
+      configUIWin.webContents.openDevTools()
     }
 
   function configServer() {
-    configWin = new BrowserWindow({width: 400, height: 550, show:false, alwaysOnTop: true, resizable: false, webPreferences: { enableRemoteModule: true, nodeIntegration: true, parent: appWin }})
-    configWin.loadFile(`${__dirname}/_configServer/configServer.html`)
-    configWin.setMenu( null )
-    configWin.show()
+    configServerWin = new BrowserWindow({width: 400, height: 550, show:false, alwaysOnTop: true, resizable: false, webPreferences: { contextIsolation: true, preload: path.join(__dirname, "preload.js"), parent: appWin }})
+    configServerWin.loadFile(`${__dirname}/_configServer/configServer.html`)
+    configServerWin.setMenu( null )
+    configServerWin.show()
     
-    configWin.on('closed', () => { configWin = null })
-    //configWin.webContents.openDevTools()
+    configServerWin.on('closed', () => { configServerWin = null })
+    configServerWin.webContents.openDevTools()
   }
 
   function about() {
@@ -269,6 +269,17 @@ app.on('ready', initApp)
 =                 IPC signals                 =
 =============================================*/
 
+ipcMain.on('getGlobal', (e, type) => {
+  switch(type) {
+    case 'appConf':
+      e.returnValue = global.APPCONF
+    break
+    case 'interface':
+      e.returnValue = global.UI
+    break
+  }
+})
+
 ipcMain.on('saveAppConf', (e, arg) => { 
   global.APPCONF = arg
   saveConf(arg, CONFIG_FILE)
@@ -276,7 +287,7 @@ ipcMain.on('saveAppConf', (e, arg) => {
   restart()
 })
 
-ipcMain.on('saveUI', (e, arg) => { 
+ipcMain.on('saveInterface', (e, arg) => { 
   global.UI = arg
   saveConf(arg, CONFIGUI_FILE)
   logs.log('MAIN', 'SAVE_UI', JSON.stringify(arg))
@@ -295,6 +306,20 @@ ipcMain.on('saveUI', (e, arg) => {
     fs.writeFileSync(path + arg.barImg.name, file)
   }
   restart()
+})
+
+ipcMain.on('closeWindow', (e, arg) => { 
+  switch(arg) {
+    case 'config':
+      configWin.close()
+    break
+    case 'configUI':
+      configUIWin.close()
+    break
+    case 'configServer':
+      configServerWin.close()
+    break
+  }
 })
 
 ipcMain.on('saveDirDialog', (e, arg) => {
