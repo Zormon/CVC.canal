@@ -133,25 +133,25 @@ window.onkeyup = (e) => {
   switch (e.keyCode) {
     // Enter: Siguiente contenido
     case 13:
-      content.next()
       window.ipc.logger.std({origin: 'USER', event: 'SKIP_CONTENT', message: ''})
+      content.next()
     break
     // Shift: Siguiente cancion
     case 16:
-      if (conf.music.type == 0) { music.next(); window.ipc.logger.std({origin: 'USER', event: 'SKIP_MUSIC', message: ''}) }
+      if (conf.music.type == 0) { window.ipc.logger.std({origin: 'USER', event: 'SKIP_MUSIC', message: ''}); music.next()}
     break
     case 80:
       content.togglePause()
     break
 
     case 49: // Sube cola 1
-      ws.ws.send( JSON.stringify( {accion: 'sube', cola: 0, texto: 'test'} ) )
       window.ipc.logger.std({origin: 'USER', event: 'SUBE_COLA', message: ''})
+      ws.ws.send( JSON.stringify( {accion: 'sube', cola: 0, texto: 'test'} ) )
     break
 
     case 50: // Baja cola 1
-      ws.ws.send( JSON.stringify( {accion: 'baja', cola: 0, texto: 'test'} ) )
       window.ipc.logger.std({origin: 'USER', event: 'BAJA_COLA', message: ''})
+      ws.ws.send( JSON.stringify( {accion: 'baja', cola: 0, texto: 'test'} ) )
     break
   }
 }

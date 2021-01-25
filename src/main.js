@@ -214,7 +214,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     appWin.on('closed', () => { logs.log('MAIN','QUIT',''); app.quit() })
 
     logs.log('MAIN','START','')
-    appWin.webContents.openDevTools()
+    //appWin.webContents.openDevTools()
   }
 
   function config() {
@@ -236,7 +236,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
       configUIWin.show()
       
       configUIWin.on('closed', () => { configUIWin = null })
-      configUIWin.webContents.openDevTools()
+      //configUIWin.webContents.openDevTools()
     }
 
   function configServer() {
@@ -246,7 +246,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     configServerWin.show()
     
     configServerWin.on('closed', () => { configServerWin = null })
-    configServerWin.webContents.openDevTools()
+    //configServerWin.webContents.openDevTools()
   }
 
   function about() {
