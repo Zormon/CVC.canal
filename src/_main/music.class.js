@@ -35,9 +35,9 @@ class Music {
           let next = parseInt(localStorage.getItem('nextMusic'))
           if (isNaN(next) || next >= this.canciones.length) { next = 0 }
           this.el.src = `file://${this.dir}/files/${this.canciones[next].archivo}`
-          localStorage.setItem('nextMusic', ++next)
-
+          
           this.log({origin: 'MUSIC', event: 'PLAY', message:  this.canciones[next].titulo})
+          localStorage.setItem('nextMusic', ++next)
         }
       }
 
