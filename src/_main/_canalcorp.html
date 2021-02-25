@@ -5,13 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Canal CVC</title>
   <link rel="stylesheet" href="../res/canalcorp.css">
-  <script src="../preload.web.js"></script>
-  <script src="../_main/timer.class.js" defer></script>
-  <script src="../_main/linein.class.js" defer></script>
-  <script src="../_main/music.class.js" defer></script>
-  <script src="../_main/content.class.js" defer></script>
-  <script src="../_main/wSocket.class.js" defer></script>
-  <script src="../_main/index.js" defer></script>
+  <script type="module" src="../_main/index.js"></script>
 </head>
 
 <body class="main canalcorp">
@@ -25,5 +19,11 @@
     <img id="barImage" class="item" src="../../files/barImage.png">
     <img id="clientLogo" class="item" src="../../files/logoCliente.png">
   </div>
+
+  
+  <template id="msgBox">
+    <h1 data-tpl="header"></h1>
+    <p data-tpl="texto"></p>
+</template>
 </body>
 </html>

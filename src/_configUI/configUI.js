@@ -1,3 +1,5 @@
+import {$, $$, $$$} from '../exports.web.js'
+
 var UI = window.ipc.get.interface()
 
 function saveConfigUI() {
@@ -113,7 +115,7 @@ function clearCanvas(canvas) {
     $('default').onclick = (e)=> {
         e.preventDefault()
         $('mainColor').value = '#ff0000'
-        $('secondaryColor').value = '#00ff00'
+        $('secondaryColor').value = '#01A701'
         $('info').checked = true
         $('historial').checked = false
         $('textoColas').checked = false

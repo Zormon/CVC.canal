@@ -1,4 +1,4 @@
-function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)) }
+import {sleep} from '../exports.web.js'
 
 class Music {
     constructor(dir, maxVolume, logger) {
@@ -65,3 +65,5 @@ class Music {
         }
     }
   }
+
+  export default Music

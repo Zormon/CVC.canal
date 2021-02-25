@@ -1,6 +1,4 @@
-function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)) }
-function $$(id)     { return document.querySelector(id)     }
-function isFunction(f) {return f && {}.toString.call(f)==='[object Function]'}
+import {iconNames, $, $$, isFunction, modalBox} from '../exports.web.js'
 
 class wSocket {
     constructor(ip, port, pan, UI, ting, logger) {
@@ -35,7 +33,7 @@ class wSocket {
                     this.log({origin: 'TURNOMATIC', event: 'PAN', message: `Aviso del pan`})
                 break
                 default:
-                    modalBox('socketError', false)
+                    modalBox('OFFLINE', false)
                     _this.check()
                 break
             }
@@ -48,7 +46,7 @@ class wSocket {
 
     spread(colas, turnos) {
         // Crea los divs con las colas
-        let divColas, wrapper, cola, num, nombre, texto
+        let divColas, wrapper, cola, nombre, num, icon, texto
         divColas = $('colas')
         while (divColas.firstChild) { divColas.removeChild(divColas.firstChild) }
         for (let i=0; i < colas.length; i++) {
@@ -57,9 +55,10 @@ class wSocket {
                 wrapper = document.createElement('div'); wrapper.style = `background:${colas[i].color}; color:${colas[i].color};`
                 nombre = document.createElement('span'); nombre.className = 'nombre'; nombre.textContent = colas[i].nombre; nombre.style = `border-color:${colas[i].color}`
                 num = document.createElement('span'); num.className = 'num'; num.textContent = turnos[i].num
+                icon = document.createElement('i'); icon.className = `icon-${iconNames[colas[i].icon]}`
                 texto = document.createElement('span'); texto.className = 'texto'; texto.textContent = turnos[i].texto;
             
-                wrapper.appendChild(texto); wrapper.appendChild(num); wrapper.appendChild(nombre)
+                wrapper.appendChild(texto); wrapper.appendChild(num); wrapper.appendChild(nombre); wrapper.appendChild(icon)
                 cola.appendChild(wrapper)
 
                 if (this.UI.colas.historial) {
@@ -136,9 +135,11 @@ class wSocket {
             _this.init()
             _this.check()
 
-            modalBox('socketError', 'error', 'ERROR DE CONEXIÓN', `Conectando a ${this.ip}`)
+            modalBox('OFFLINE', 'msgBox', [['header','ERROR DE CONEXIÓN'],['texto',`Conectando a ${this.ip}`]], 'error', false )
             this.logError({origin: 'TURNOMATIC', error: 'OFFLINE', message: `Conectando a ${this.ip}`})
             
         }, 5000)
       }
 }
+
+export default wSocket

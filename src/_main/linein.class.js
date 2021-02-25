@@ -1,6 +1,4 @@
-function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)) }
-
-//navigator.MediaDevices.enumerateDevices()
+import {sleep} from '../exports.web.js'
 
 class LineIn {
     constructor(maxVolume) {
@@ -50,3 +48,5 @@ class LineIn {
         }
     }
   }
+
+  export default LineIn
