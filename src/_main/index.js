@@ -87,7 +87,7 @@ switch(conf.music.type) {
   case 0: // Hilo integrado
     music = new Music(conf.music.path, conf.music.volume, window.ipc.logger)
     music.updatePlaylist().then( ()=> { music.next() })
-    setInterval('music.updatePlaylist()', 60000) // 60 seconds
+    setInterval(music.updatePlaylist, 60000) // 60 seconds
   break
 
   case 1: //Hilo externo
@@ -103,7 +103,7 @@ switch(conf.music.type) {
 
 var content = new Content(conf.media.path, music, window.ipc.logger)
 content.updatePlaylist().then( ()=> { content.next() })
-setInterval('content.updatePlaylist()', 60000) // 60 seconds
+setInterval(content.updatePlaylist, 60000) // 60 seconds
 
 const ting = conf.avisoSonoro? new Audio('../res/aviso.opus') : false;
 var ws = new wSocket(conf.server.ip, conf.server.port, true, UI, ting, window.ipc.logger)
