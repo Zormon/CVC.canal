@@ -162,7 +162,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 =============================================*/
 
   function initApp() {
-    let windowOptions = {autoHideMenuBar: true, resizable:true, show: false, webPreferences: { contextIsolation: true, preload: path.join(__dirname, "preload.js") }, icon: `${app.getAppPath()}/icon64.png`}
+    let windowOptions = {autoHideMenuBar: true, resizable:true, show: false, webPreferences: { preload: path.join(__dirname, "preload.js") }, icon: `${app.getAppPath()}/icon64.png`}
     if      (APPCONF.window.type == 0)   { windowOptions.fullscreen = true }
     else if (APPCONF.window.type == 1 || APPCONF.window.type == 3)   { windowOptions.frame = false } // Borderless
     if (APPCONF.window.type != 0) { windowOptions.alwaysOnTop = APPCONF.window.alwaysOnTop }
@@ -218,7 +218,11 @@ var appWin; var configWin; var configServerWin; var configUIWin;
   }
 
   function config() {
-    configWin = new BrowserWindow({width: 720, height: 480, show:false, alwaysOnTop: true, webPreferences: { contextIsolation: true, preload: path.join(__dirname, "preload.js"), parent: appWin }})
+    const winOptions = {
+      width: 720, height: 440, show:false, parent: appWin, modal:true, resizable:false, 
+      webPreferences: { preload: path.join(__dirname, "preload.js") }
+    }
+    configWin = new BrowserWindow(winOptions)
     configWin.loadFile(`${__dirname}/_config/config.html`)
     configWin.setMenu( null )
     configWin.resizable = false
@@ -230,7 +234,11 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 
     // Ventana de personalizacion de interfaz
     function configUI() {
-      configUIWin = new BrowserWindow({width: 700, height: 720, show:false, alwaysOnTop: true, resizable: false, webPreferences: { contextIsolation: true, preload: path.join(__dirname, "preload.js"), parent: appWin }})
+      const winOptions = {
+        width: 720, height: 640, show:false, parent: appWin, modal:true, resizable:false, 
+        webPreferences: { preload: path.join(__dirname, "preload.js") }
+      }
+      configUIWin = new BrowserWindow(winOptions)
       configUIWin.loadFile(`${__dirname}/_configUI/configUI.html`)
       configUIWin.setMenu( null )
       configUIWin.show()
@@ -240,7 +248,11 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     }
 
   function configServer() {
-    configServerWin = new BrowserWindow({width: 400, height: 550, show:false, alwaysOnTop: true, resizable: false, webPreferences: { contextIsolation: true, preload: path.join(__dirname, "preload.js"), parent: appWin }})
+    const winOptions = {
+      width: 400, height: 550, show:false, parent: appWin, modal:true, resizable:false, 
+      webPreferences: { preload: path.join(__dirname, "preload.js") }
+    }
+    configServerWin = new BrowserWindow(winOptions)
     configServerWin.loadFile(`${__dirname}/_configServer/configServer.html`)
     configServerWin.setMenu( null )
     configServerWin.show()
@@ -253,7 +265,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     const options  = {
       type: 'info',
       buttons: ['Aceptar'],
-      message: 'Canal corporativo y turnomatic digital\nComunicacion Visual Canarias 2020\nContacto: 928 67 29 81'
+      message: 'Canal corporativo y turnomatic digital\nComunicacion Visual Canarias 2021\nContacto: 928 67 29 81'
      }
     dialog.showMessageBox(appWin, options)
   }
