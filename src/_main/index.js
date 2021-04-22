@@ -53,7 +53,6 @@ function avisoPan(mus, cont) {
 // Aplica CSS basado en la configuracion
 if (!UI.info) { document.body.classList.add('noInfo') }
 const css = new CSSStyleSheet()
-if (!UI.colas.mensaje) css.insertRule(' #colas .texto { display:none; ')
 // Colores
 css.insertRule(` :root { --main-color: ${UI.colors.main}; } `)
 css.insertRule(` :root { --main-color-light: ${shadeColor(UI.colors.main, 30)}; } `)

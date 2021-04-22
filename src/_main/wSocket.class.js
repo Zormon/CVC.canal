@@ -46,42 +46,55 @@ class wSocket {
 
     spread(colas, turnos) {
         // Crea los divs con las colas
-        let divColas, wrapper, cola, nombre, num, icon, texto
-        divColas = $('colas')
+        let divColas, cola, nombre, num, icon, texto, colasEnPantalla=[]
+        divColas = $('colas'); divColas.className = ''
         while (divColas.firstChild) { divColas.removeChild(divColas.firstChild) }
-        for (let i=0; i < colas.length; i++) {
-            if ( this.UI.colas.excluir.indexOf(i+1) == -1 ) { 
-                cola = document.createElement('div'); cola.id =  `cola${i}`
-                wrapper = document.createElement('div'); wrapper.style = `background:${colas[i].color}; color:${colas[i].color};`
-                nombre = document.createElement('span'); nombre.className = 'nombre'; nombre.textContent = colas[i].nombre; nombre.style = `border-color:${colas[i].color}`
-                num = document.createElement('span'); num.className = 'num'; num.textContent = turnos[i].num
-                icon = document.createElement('i'); icon.className = `icon-${iconNames[colas[i].icon]}`
-                texto = document.createElement('span'); texto.className = 'texto'; texto.textContent = turnos[i].texto;
+
+        colas.forEach((el, key) => {
+            if ( this.UI.colas.excluir.indexOf(key+1) == -1 ) {
+                el.id = key
+                colasEnPantalla.push(el)
+              }
+        })
+
+        colasEnPantalla.forEach(col => {
+            cola = document.createElement('div'); cola.id =  `cola${col.id}`; cola.style = `background:${colas[col.id].color}; color:${colas[col.id].color};`
+                icon = document.createElement('i'); icon.className = `icon-${iconNames[colas[col.id].icon]}`
+                texto = document.createElement('span'); texto.className = 'texto'; texto.textContent = turnos[col.id].texto;
+                num = document.createElement('span'); num.className = 'num'; num.textContent = turnos[col.id].num
+                nombre = document.createElement('span'); nombre.className = 'nombre'; nombre.textContent = colas[col.id].nombre; nombre.style = `border-color:${colas[col.id].color}`
             
-                wrapper.appendChild(texto); wrapper.appendChild(num); wrapper.appendChild(nombre); wrapper.appendChild(icon)
-                cola.appendChild(wrapper)
+                cola.appendChild(icon); cola.appendChild(nombre); cola.appendChild(num)
+                if (this.UI.colas.mensaje) { cola.appendChild(texto); divColas.classList.add('texto')  }
 
                 if (this.UI.colas.historial) {
+                    divColas.classList.add('history')
                     let table = document.createElement('table'); table.className = 'historial'
-                    let tr1 = document.createElement('tr'); let tr2 = document.createElement('tr')
+                    let tr1 = document.createElement('tr'); let tr2 = document.createElement('tr'); let tr3 = document.createElement('tr')
                     let td1 = document.createElement('td'); let td2 = document.createElement('td')
                     let td3 = document.createElement('td'); let td4 = document.createElement('td')
+                    let td5 = document.createElement('td'); let td6 = document.createElement('td')
 
                     tr1.className = 'history1'
                     tr2.className = 'history2'
-                    td1.className = td3.className = 'historyNum'
-                    td2.className = td4.className = 'historyText'
-                    td1.textContent = td2.textContent = td3.textContent = td4.textContent = '-'
+                    tr3.className = 'history3'
+                    td1.className = td3.className = td5.className = 'historyNum'
+                    td2.className = td4.className = td6.className = 'historyText'
+                    td1.textContent = td2.textContent = td3.textContent = td4.textContent = td5.textContent = td6.textContent ='-'
 
                     tr1.appendChild(td1);   tr1.appendChild(td2)
                     tr2.appendChild(td3);   tr2.appendChild(td4)
-                    table.appendChild(tr1); table.appendChild(tr2)
-                    wrapper.appendChild(table)
+                    tr3.appendChild(td5);   tr3.appendChild(td6)
+                    table.appendChild(tr1)
+                    if (colasEnPantalla.length <= 2) { table.appendChild(tr2) }
+                    if (colasEnPantalla.length == 1) { table.appendChild(tr3) }
+                    
+                    cola.appendChild(table)
                 }
+                divColas.appendChild(cola)
+        })
 
-                $('colas').appendChild(cola)
-            }
-        }
+        divColas.classList.add(`ncolas-${colasEnPantalla.length}`)
 
         if (this.UI.type == 3) {
             const n = this.UI.colas.destacada - 1
@@ -91,10 +104,10 @@ class wSocket {
             if (typeof colas[n] !== 'undefined' && this.UI.colas.excluir.indexOf(n+1) == -1) {
                 try { $(`cola${n}`).remove() }catch(e){}
                 cola = document.createElement('div'); cola.id =  `cola${n}`; cola.style = `background:${colas[n].color}; color:${colas[n].color};`
-                num = document.createElement('span'); num.className = 'num'; num.textContent = turnos[n].num
                 nombre = document.createElement('span'); nombre.className = 'nombre'; nombre.textContent = colas[n].nombre; nombre.style = `border-color:${colas[n].color}`
+                num = document.createElement('span'); num.className = 'num'; num.textContent = turnos[n].num
             
-                cola.appendChild(num); cola.appendChild(nombre)
+                cola.appendChild(nombre); cola.appendChild(num)
                 divColas.appendChild(cola)
             }
         }
@@ -108,12 +121,22 @@ class wSocket {
 
         if (this.UI.colas.historial) {
             let history1Num = $$(`#cola${cola} .history1 .historyNum`)
-            let history2Num = $$(`#cola${cola} .history2 .historyNum`)
             let history1Text = $$(`#cola${cola} .history1 .historyText`)
+            let history2Num = $$(`#cola${cola} .history2 .historyNum`)
             let history2Text = $$(`#cola${cola} .history2 .historyText`)
+            let history3Num = $$(`#cola${cola} .history3 .historyNum`)
+            let history3Text = $$(`#cola${cola} .history3 .historyText`)
 
-            history2Num.textContent = history1Num.textContent
-            history2Text.textContent = history1Text.textContent
+            if (history3Num) {
+                history3Num.textContent = history2Num.textContent
+                history3Text.textContent = history2Text.textContent
+            }
+
+            if (history2Num) {
+                history2Num.textContent = history1Num.textContent
+                history2Text.textContent = history1Text.textContent
+            }
+
             history1Text.textContent = mainText.textContent
             history1Num.textContent = mainNum.textContent
         }
