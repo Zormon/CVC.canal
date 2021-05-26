@@ -114,35 +114,40 @@ class wSocket {
     }
 
     update(cola, num, texto='') {
-        try         { var mainText = $$(`#cola${cola} .texto`) } 
-        catch (e)   { console.warn( `Cola ${cola}, Numero ${num}, Texto: ${texto} | Ex: ${e.message}` ); return }
+        var mainNum = $$(`#cola${cola} .num`); if (typeof mainNum == 'undefined') { return }
 
-        var mainNum = $$(`#cola${cola} .num`)
+        if (this.UI.colas.mensaje) {
+            let mainText = $$(`#cola${cola} .texto`)
 
-        if (this.UI.colas.historial) {
-            let history1Num = $$(`#cola${cola} .history1 .historyNum`)
-            let history1Text = $$(`#cola${cola} .history1 .historyText`)
-            let history2Num = $$(`#cola${cola} .history2 .historyNum`)
-            let history2Text = $$(`#cola${cola} .history2 .historyText`)
-            let history3Num = $$(`#cola${cola} .history3 .historyNum`)
-            let history3Text = $$(`#cola${cola} .history3 .historyText`)
-
-            if (history3Num) {
-                history3Num.textContent = history2Num.textContent
-                history3Text.textContent = history2Text.textContent
+            if (this.UI.colas.historial) {
+                let history1Num = $$(`#cola${cola} .history1 .historyNum`)
+                let history1Text = $$(`#cola${cola} .history1 .historyText`)
+                let history2Num = $$(`#cola${cola} .history2 .historyNum`)
+                let history2Text = $$(`#cola${cola} .history2 .historyText`)
+                let history3Num = $$(`#cola${cola} .history3 .historyNum`)
+                let history3Text = $$(`#cola${cola} .history3 .historyText`)
+    
+                if (history3Num) {
+                    history3Num.textContent = history2Num.textContent
+                    history3Text.textContent = history2Text.textContent
+                }
+    
+                if (history2Num) {
+                    history2Num.textContent = history1Num.textContent
+                    history2Text.textContent = history1Text.textContent
+                }
+    
+                history1Text.textContent = mainText.textContent
+                history1Num.textContent = mainNum.textContent
             }
 
-            if (history2Num) {
-                history2Num.textContent = history1Num.textContent
-                history2Text.textContent = history1Text.textContent
-            }
+            mainText.textContent = texto
 
-            history1Text.textContent = mainText.textContent
-            history1Num.textContent = mainNum.textContent
+            
         }
 
+
         if (this.ting) { this.ting.pause(); this.ting.play() }
-        mainText.textContent = texto
         mainNum.textContent = num.toString()
         mainNum.classList.remove('effect')
         mainNum.offsetHeight // Reflow
