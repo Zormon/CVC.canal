@@ -1,7 +1,7 @@
 {
   "name": "canal",
   "productName": "canal",
-  "version": "5.2.4",
+  "version": "6.0.3",
   "description": "Canal y Turnomatic CVC",
   "main": "src/main.js",
   "scripts": {
@@ -19,7 +19,7 @@
     }
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.54",
-    "electron": "^12.0.7"
+    "@electron-forge/cli": "^6.0.0-beta.59",
+    "electron": "^13.1.9"
   }
 }

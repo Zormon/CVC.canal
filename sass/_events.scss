@@ -1,0 +1,11 @@
+
+#eventMedia {
+    z-index: 3;
+    width: 101%;
+    height: 101%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    object-fit: fill;
+    animation: zoom-in .5s ease-out;
+}

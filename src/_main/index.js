@@ -7,6 +7,7 @@ import {$} from '../exports.web.js'
 const conf = window.ipc.get.appConf()
 const UI = window.ipc.get.interface()
 
+
 /*=============================================
 =            Funciones            =
 =============================================*/
@@ -28,20 +29,7 @@ function time() {
   $('time').textContent = date.getHours().toString().padStart(2,'0') + ':' + date.getMinutes().toString().padStart(2,'0')
 }
 
-/**
- * Genera el aviso del pan, pausando el vídeo y mostrando la imagen del aviso
- */
-function avisoPan(mus, cont) {
-    if (!cont.paused) { // Solo hace algo si el contenido no esta ya pausado
-      cont.togglePause()
-      if (mus) { mus.fadeOut() } //Try?
-      let img = document.createElement("img")
-      img.id = 'imgPan'
-      img.src = '../res/pan.jpg'
-      document.body.appendChild(img)
-      pan.play()
-    }
-}
+
  
 /*=====  End of Funciones  ======*/
 
@@ -75,12 +63,7 @@ document.adoptedStyleSheets = [css]
 
 
 var music
-var pan = new Audio('../res/pan.opus')
-pan.onended = async ()=> { 
-  content.togglePause()
-  if ( content.current.volumen == 0 && music) { await music.fadeIn() }
-  $('imgPan').remove()
-}
+
 
 switch(conf.music.type) {
   case 0: // Hilo integrado
@@ -101,12 +84,10 @@ switch(conf.music.type) {
 }
 
 var content = new Content(conf.media.path, music, window.ipc.logger)
-content.updatePlaylist().then( ()=> { content.next() })
-setInterval(()=>{content.updatePlaylist()}, 20000) // 20 seconds
+content.next()
 
 const ting = conf.avisoSonoro? new Audio('../res/aviso.opus') : false;
-var ws = new wSocket(conf.server.ip, conf.server.port, true, UI, ting, window.ipc.logger)
-ws.onpan = ()=> { avisoPan(music, content) }
+var ws = new wSocket(conf.server, content, UI, window.ipc, {ting:ting, pan:true})
 ws.init()
 
 time()

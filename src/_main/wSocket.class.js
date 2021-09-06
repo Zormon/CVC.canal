@@ -1,15 +1,16 @@
 import {iconNames, $, $$, isFunction, modalBox} from '../exports.web.js'
 
 class wSocket {
-    constructor(ip, port, pan, UI, ting, logger) {
-        this.ip = ip
-        this.port = port
+    constructor(server, content, UI, ipc, options={pan:false, ting:false}) {
+        this.ip = server.ip
+        this.port = server.port
+        this.content = content
         this.UI = UI
-        this.log = logger.std
-        this.logError = logger.error
-        this.ting = ting
-        this.pan = pan
-        this.onpan = null
+        this.shellExec = ipc.sys.shellExec
+        this.log = ipc.logger.std
+        this.logError = ipc.logger.error
+        this.ting = (typeof options.ting != 'undefined')? options.ting : false
+        this.pan = (typeof options.pan != 'undefined')? options.pan : false
     }
 
     init() {
@@ -21,16 +22,37 @@ class wSocket {
             let msg = JSON.parse(message.data)
             switch (msg.accion) {
                 case 'spread':
-                    if (this.UI.type != 0) { this.spread(msg.colas, msg.turnos) }
-                    this.log({origin: 'TURNOMATIC', event: 'SPREAD', message: `Colas: ${JSON.stringify(msg.colas)}, Turnos: ${JSON.stringify(msg.turnos)}, Tickets: ${JSON.stringify(msg.tickets)}`})
+                    if (this.UI.type != 0) { 
+                        this.spread(msg.colas, msg.turnos) 
+                        this.log({origin: 'NODESERVER', event: 'SPREAD', message: `Colas: ${JSON.stringify(msg.colas)}, Turnos: ${JSON.stringify(msg.turnos)}, Tickets: ${JSON.stringify(msg.tickets)}`})
+                    }
                 break
                 case 'update':
                     if (this.UI.type != 0) { this.update(msg.cola, msg.numero, msg.texto) }
-                    this.log({origin: 'TURNOMATIC', event: 'UPDATE', message: `Cola: ${msg.cola}, Numero: ${msg.numero}, Texto: ${msg.texto}`})
+                    this.log({origin: 'NODESERVER', event: 'UPDATE_NUM', message: `Cola: ${msg.cola}, Numero: ${msg.numero}, Texto: ${msg.texto}`})
                 break
-                case 'pan':
-                    if ( isFunction(this.onpan) ) { this.onpan() }
-                    this.log({origin: 'TURNOMATIC', event: 'PAN', message: `Aviso del pan`})
+                case 'event':
+                    if (msg.event.devices.length === 0 || msg.event.devices.indexOf(this.content.deviceID) != -1) { // Si el evento es para todo o este equipo
+                        switch (msg.event.type) {
+                            case 'pan':
+                                if ( this.pan ) { 
+                                    this.content.eventMedia('../../files/avisoPan.mp4', 16, 1)
+                                    this.log({origin: 'NODESERVER', event: 'PAN', message: `Aviso del pan`})
+                                }
+                            break
+                            case 'media':
+                                if ( this.content.eventMedia(`${this.content.dir}/files/${msg.event.data.file}`, msg.event.data.duration, msg.event.data.volume)  ) {
+                                    this.log({origin: 'NODESERVER', event: 'MEDIA_EVENT', message: `Archivo: ${msg.event.data.file}, Duracion: ${msg.event.data.duration}`})
+                                } else {
+                                    this.logError({origin: 'NODESERVER', error: 'MEDIA_EVENT_CANT_PLAY', message: `Evento recibido pero no se pudo reproducir ${msg.event.data.file}`})
+                                }
+                            break
+                            case 'shellExec':
+                                this.shellExec(msg.event.cmd)
+                                this.log({origin: 'NODESERVER', event: 'SHELLEXEC_EVENT', message: `Comando: ${msg.event.data.cmd}`})
+                            break
+                        }
+                    }
                 break
                 default:
                     modalBox('OFFLINE', false)
@@ -114,7 +136,7 @@ class wSocket {
     }
 
     update(cola, num, texto='') {
-        var mainNum = $$(`#cola${cola} .num`); if (typeof mainNum == 'undefined') { return }
+        var mainNum = $$(`#cola${cola} .num`); if (mainNum == null) { return }
 
         if (this.UI.colas.mensaje) {
             let mainText = $$(`#cola${cola} .texto`)
@@ -140,10 +162,7 @@ class wSocket {
                 history1Text.textContent = mainText.textContent
                 history1Num.textContent = mainNum.textContent
             }
-
             mainText.textContent = texto
-
-            
         }
 
 
@@ -164,7 +183,7 @@ class wSocket {
             _this.check()
 
             modalBox('OFFLINE', 'msgBox', [['header','ERROR DE CONEXIÓN'],['texto',`Conectando a ${this.ip}`]], 'error', false )
-            this.logError({origin: 'TURNOMATIC', error: 'OFFLINE', message: `Conectando a ${this.ip}`})
+            this.logError({origin: 'NODESERVER', error: 'OFFLINE', message: `Conectando a ${this.ip}`})
             
         }, 5000)
       }

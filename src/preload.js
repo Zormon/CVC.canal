@@ -19,6 +19,9 @@ contextBridge.exposeInMainWorld (
         },
         win: {
             close: (win) => ipcRenderer.send('closeWindow', win)
+        },
+        sys: {
+            shellExec: (cmd) => ipcRenderer.send('execShell', cmd)
         }
     }
 )

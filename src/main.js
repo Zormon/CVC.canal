@@ -1,5 +1,6 @@
 const appName = 'canal'
 const { app, BrowserWindow, Menu, ipcMain, dialog, screen } = require('electron')
+const { exec } = require("child_process")
 const fs = require("fs")
 const path = require('path')
 const logger = require('./log.js')
@@ -210,11 +211,11 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     appWin.on('page-title-updated', (e)=>{ e.preventDefault()})
     Menu.setApplicationMenu( Menu.buildFromTemplate(menu) )
     appWin.setResizable(false)
-    appWin.show()
     appWin.on('closed', () => { logs.log('MAIN','QUIT',''); app.quit() })
 
+    appWin.show()
     logs.log('MAIN','START','')
-    //appWin.webContents.openDevTools()
+    appWin.webContents.openDevTools()
   }
 
   function config() {
@@ -281,6 +282,10 @@ app.on('ready', initApp)
 =                 IPC signals                 =
 =============================================*/
 
+ipcMain.on('execShell', (e, cmd) => {
+  exec(cmd)
+})
+
 ipcMain.on('getGlobal', (e, type) => {
   switch(type) {
     case 'appConf':
@@ -338,10 +343,10 @@ ipcMain.on('saveDirDialog', (e, arg) => {
   let options
   if (arg.file) { // Abre archivo
     options = {
-      title : 'Abrir archivo lista.xml', 
+      title : 'Abrir archivo list.json', 
       defaultPath : arg.dir,
       buttonLabel : "Abrir lista",
-      filters : [{name: 'lista', extensions: ['xml']}],
+      filters : [{name: 'list', extensions: ['json']}],
       properties: ['openFile']
     }
   } else { // Abre directorio

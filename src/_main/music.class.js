@@ -18,23 +18,23 @@ class Music {
     }
 
     async updatePlaylist() {
-        return fetch(`file://${this.dir}/lista.xml`).then(r => r.text()).then(s => new window.DOMParser().parseFromString(s, "text/xml")).then((xml) => {
-            let nodes = xml.getElementsByTagName('cancion')
+        return fetch(`file://${this.dir}/list.json`).then(r => r.json()).then((data) => {
             this.canciones = new Array()
-            for (let i=0; i< nodes.length; i++) {
-              this.canciones.push({
-                  'titulo': nodes[i].getElementsByTagName('titulo')[0].textContent,
-                  'archivo': nodes[i].getElementsByTagName('archivo')[0].textContent
-              })
-            }
+
+            data.canciones.forEach(canc => {
+                this.canciones.push({
+                    'titulo': canc.titulo,
+                    'fichero': canc.fichero
+                })  
+            })
         })
-      }
+    }
 
     next() {
         if (this.canciones != null) {
           let next = parseInt(localStorage.getItem('nextMusic'))
           if (isNaN(next) || next >= this.canciones.length) { next = 0 }
-          this.el.src = `file://${this.dir}/files/${this.canciones[next].archivo}`
+          this.el.src = `file://${this.dir}/files/${this.canciones[next].fichero}`
           
           this.log({origin: 'MUSIC', event: 'PLAY', message:  this.canciones[next].titulo})
           localStorage.setItem('nextMusic', ++next)

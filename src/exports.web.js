@@ -75,11 +75,18 @@ function modalBox(id, template, tplvars=[], type='', accion=false, buttons=['Can
   }
 }
 
+function urlExists(url) {
+    return new Promise((resolve, reject) => {
+      fetch(url).then(()=> { resolve(true)}).catch((e)=> { resolve(false) })
+    })
+}
+
 
 export { 
   iconNames,
   sleep,
   modalBox,
+  urlExists,
   isFunction,
   getById as $,
   querySel as $$,

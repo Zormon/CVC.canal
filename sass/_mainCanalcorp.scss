@@ -33,16 +33,3 @@ body.main {
         }
     }
 }
-
-/* ******************************
-***********  EVENTOS  *************
-********************************* */
-
-/* PAN */
-img#imgPan {
-    position: absolute;
-    width: 100%;
-    left: 0; top: 0;
-    z-index: 1;
-    animation: zoom-in 2s ease-out;
-}
