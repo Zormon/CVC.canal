@@ -1,5 +1,5 @@
 import Timer from './timer.class.js'
-import {$, urlExists} from '../exports.web.js'
+import {$, $$, urlExists} from '../exports.web.js'
 
 const FADE_DURATION = 0.25
 
@@ -9,6 +9,7 @@ class Content {
         this.contenidos = null
         this.events = null
         this.dir = dir
+        this.music = music
         this.current = null
         this.paused = false
         this.el = null
@@ -16,8 +17,6 @@ class Content {
         this.log = logger.std
         this.logError = logger.error
 
-        if (!music) { this.music = { isFading: false, fadeOut: function(){}, fadeIn: function(){} } }
-        else        { this.music = music }
 
         this.nextTimeout
         this.contentTimer
@@ -46,23 +45,26 @@ class Content {
                 if ( isNaN(next) || next >= this.contenidos.length) { next = 0 }
     
                 this.current = this.contenidos[next]
-                if ( this.current.volumen > 0 ) { this.music.fadeOut() }
-                else                            { this.music.fadeIn() }
+                if (this.music) {
+                    if ( this.current.volumen > 0 ) { this.music.fadeOut() }
+                    else                            { this.music.fadeIn() }
+                }
             
                 switch ( this.current.fichero.split('.').pop()) {
                     case 'mp4': case 'mkv':
                         this.el = document.createElement('video')
-                        this.el.volume =  this.current.volumen
+                        this.el.volume =  this.music? this.current.volumen : 0
                         this.el.oncanplaythrough = ()=> { this.el.play() }
                     break
                     case 'jpg': case 'png':
                         this.el = document.createElement('img')
                 }
 
-                $('barProgress').className = ''
-                $('barProgress').offsetHeight
-                $('barProgress').style.animationDuration = `${this.current.duracion}s`
-                $('barProgress').className = 'advance'
+                const barProgress = $$('#barProgress > div')
+                barProgress.className = ''
+                barProgress.offsetHeight
+                barProgress.style.animationDuration = `${this.current.duracion}s`
+                barProgress.className = 'advance'
                
                 this.fadeTimer = new Timer( ()=>{ this.el.className = '' } , ( this.current.duracion - FADE_DURATION)*1000 )
                 this.contentTimer = new Timer( ()=> {_this.next()},  this.current.duracion*1000 )
@@ -142,17 +144,17 @@ class Content {
         var _this = this
         if (!this.evtMedia && await urlExists(file)) { // Solo hace algo si no hay ya un evento en curso y existe el archivo
             this.evtMedia = document.createElement("video")
-            this.evtMedia.id = 'eventMedia'; this.evtMedia.volume = volume
+            this.evtMedia.id = 'eventMedia'; this.evtMedia.volume = this.music? volume : 0
             this.evtMedia.src = file
 
             $('media').appendChild(this.evtMedia)
             this.togglePause()
-            if (volume > 0 && this.music) { this.music.fadeOut() }
+            if (this.music && volume > 0 ) { this.music.fadeOut() }
             this.evtMedia.play()
 
             setTimeout( ()=> {
                 _this.togglePause()
-                if ( volume > 0 && _this.current.volumen == 0 && _this.music ) { _this.music.fadeIn() }
+                if ( _this.music && volume > 0 && _this.current.volumen == 0 ) { _this.music.fadeIn() }
                 $('eventMedia').remove()
                 _this.evtMedia = false
             }, duration*1000 )

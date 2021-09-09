@@ -215,7 +215,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 
     appWin.show()
     logs.log('MAIN','START','')
-    appWin.webContents.openDevTools()
+    //appWin.webContents.openDevTools()
   }
 
   function config() {

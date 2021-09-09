@@ -32,8 +32,8 @@ $fade-duration: .25s;
 }
 
 @keyframes advance {
-    0%      { width: 0%; }
-    100%    { width: 100%; }
+    0%      { transform: scaleX(0); }
+    100%    { transform: scaleX(1); }
 }
 
 @font-face {
