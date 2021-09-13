@@ -1,4 +1,10 @@
 body {
+
+    #barProgress.advance {
+        animation-name: advance;
+        animation-timing-function: linear;
+    }
+
     &.canalcorp {
         #info {
             position: fixed;
@@ -36,11 +42,6 @@ body {
                     background: var(--secondary-color);
                     transform-origin: 0 0;
                     transform: scaleX(0);
-
-                    &.advance {
-                        animation-name: advance;
-                        animation-timing-function: linear;
-                    }
                 }
             }
 
@@ -112,11 +113,6 @@ body {
                     background: var(--secondary-color);
                     transform-origin: 0 0;
                     transform: scaleX(0);
-
-                    &.advance {
-                        animation-name: advance;
-                        animation-timing-function: linear;
-                    }
                 }
             }
 
@@ -201,11 +197,6 @@ body {
                     background: var(--secondary-color);
                     transform-origin: 0 0;
                     transform: scaleX(0);
-
-                    &.advance {
-                        animation-name: advance;
-                        animation-timing-function: linear;
-                    }
                 }
             }
 

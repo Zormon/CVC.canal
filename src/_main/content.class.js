@@ -72,7 +72,7 @@ class Content {
                 this.el.id = 'content'
                 this.el.src = `file://${this.dir}/files/${this.current.fichero}`
                 this.el.onerror = (e)=> { 
-                    this.nextTimeout = setTimeout(()=> { _this.next() }, 2000) 
+                    this.nextTimeout = setTimeout(()=> { _this.next() }, 1000) 
                     this.logError({origin: 'MEDIA', error: 'NOT_FOUND', message: `No se ha encontrado el archivo: ${this.current.fichero}`})
                 }
                     

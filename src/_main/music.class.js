@@ -5,16 +5,18 @@ class Music {
         this.canciones = null
         this.dir = dir
         this.maxVolume = maxVolume
-        this.el = document.createElement('audio')
+        this.el = new Audio()
         this.el.id = 'music'
         this.el.onended = ()=> { this.next() }
         this.el.oncanplaythrough = ()=> { this.el.play() }
+        this.el.onerror = (e)=> { 
+            this.logError({origin: 'MUSIC', error: 'CANT_LOAD', message: `No se pudo cargar el fichero ${this.el.src}`})
+            this.next()
+        }
         this.el.volume = maxVolume
         this.isFading = false
         this.log = logger.std
         this.logError = logger.error
-
-        document.body.appendChild(this.el)
     }
 
     async updatePlaylist() {
