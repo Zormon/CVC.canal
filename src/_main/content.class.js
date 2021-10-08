@@ -51,7 +51,7 @@ class Content {
                 }
             
                 switch ( this.current.fichero.split('.').pop()) {
-                    case 'mp4': case 'mkv':
+                    case 'mp4': case 'mkv': case'webm':
                         this.el = document.createElement('video')
                         this.el.volume =  this.music? this.current.volumen : 0
                         this.el.oncanplaythrough = ()=> { this.el.play() }
