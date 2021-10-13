@@ -7,7 +7,6 @@ import {$} from '../exports.web.js'
 const conf = window.ipc.get.appConf()
 const UI = window.ipc.get.interface()
 
-
 /*=============================================
 =            Funciones            =
 =============================================*/
@@ -55,16 +54,17 @@ switch (UI.colas.BGtype) {
     css.insertRule(` #colas { background: radial-gradient( circle, var(--turnos-color-light), var(--turnos-color));} `)
   break
   case 2: // Img
-    css.insertRule(` #colas { background: url(../../files/asideBG.png) 0 0 no-repeat; background-size: 100% 100%} `)
+    css.insertRule(` #colas { background: url(file://${window.ipc.get.path('userData').replace(/\\/g,'/')}/_custom/asideBG.png) 0 0 no-repeat; background-size: 100% 100%} `)
   break
 }
 
 document.adoptedStyleSheets = [css]
 
+$('midImg').src = `file://${window.ipc.get.path('userData')}/_custom/midBarImg.png`
+$('rightImg').src = `file://${window.ipc.get.path('userData')}/_custom/rightBarImg.png`
+
 
 var music
-
-
 switch(conf.music.type) {
   case 0: // Hilo integrado
     music = new Music(conf.music.path, conf.music.volume, window.ipc.logger)
@@ -86,7 +86,7 @@ switch(conf.music.type) {
 var content = new Content(conf.media.path, music, window.ipc.logger)
 content.next()
 
-const ting = conf.avisoSonoro? new Audio('../res/aviso.opus') : false;
+const ting = conf.avisoSonoro? new Audio(`file://${window.ipc.get.path('userData')}/_custom/ting.opus`) : false;
 var ws = new wSocket(conf.server, content, UI, window.ipc, {ting:ting, pan:true})
 ws.init()
 

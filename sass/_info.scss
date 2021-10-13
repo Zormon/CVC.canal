@@ -52,13 +52,13 @@ body {
             }
 
             img { 
-                &#barImage {
+                &#midImg {
                     left: 35%;
                     bottom: 0;
                     height: 80%;
                 }
         
-                &#clientLogo {
+                &#rightImg {
                     height: 11vh;
                     right: 3%;
                     bottom: 0;
@@ -129,13 +129,13 @@ body {
                     width: 101%;
                 }
     
-                &#barImage {
+                &#midImg {
                     left: 35%;
                     bottom: 0%;
                     height: 80%;
                 }
         
-                &#clientLogo {
+                &#rightImg {
                     right: 1%;
                     bottom: 0%;
                     height: 92%;
@@ -176,11 +176,11 @@ body {
             img {
                 object-fit: contain;
                 
-                &#barImage {
+                &#midImg {
                     width: 80%;
                 }
         
-                &#clientLogo {
+                &#rightImg {
                     width: 80%;
                 }
             }

@@ -6,9 +6,12 @@ class wSocket {
         this.port = server.port
         this.content = content
         this.UI = UI
+
+        this.userData = ipc.get.path('userData')
         this.shellExec = ipc.sys.shellExec
         this.log = ipc.logger.std
         this.logError = ipc.logger.error
+
         this.ting = (typeof options.ting != 'undefined')? options.ting : false
         this.pan = (typeof options.pan != 'undefined')? options.pan : false
     }
@@ -36,7 +39,7 @@ class wSocket {
                         switch (msg.event.type) {
                             case 'pan':
                                 if ( this.pan ) { 
-                                    this.content.eventMedia('../../files/avisoPan.mp4', 16, 1)
+                                    this.content.eventMedia(`${this.userData}/_custom/avisoPan.mp4`, 16, 1)
                                     this.log({origin: 'NODESERVER', event: 'PAN', message: `Aviso del pan`})
                                 }
                             break

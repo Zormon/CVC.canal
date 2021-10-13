@@ -1,5 +1,6 @@
 import {$, $$, $$$} from '../exports.web.js'
 
+const ev = new Event('change')
 var UI = window.ipc.get.interface()
 
 function saveConfigUI() {
@@ -15,30 +16,30 @@ function saveConfigUI() {
 
     UI.colas.excluir = Array.from( $('exColas').selectedOptions ).map(el => parseInt(el.value))
 
-    // Imagen de logo
-    if (typeof $('footerLogo').files[0] != 'undefined') {
-        UI.logo = {name: 'logoCliente.png', file: $('canvasLogo').toDataURL("image/png").substring(22)}
+    // Imagen derecha
+    if (typeof $('rightBarImg').files[0] != 'undefined') {
+        UI.rightBarImg = {name: 'rightBarImg.png', file: $('canvasRightBarImg').toDataURL("image/png").substring(22)}
     }
 
-    // Imagen de barra
-    if (typeof $('barImg').files[0] != 'undefined') {
-        UI.barImg = {name: 'barImage.png', file: $('canvasBarImg').toDataURL("image/png").substring(22)}
+    // Imagen central
+    if (typeof $('midBarImg').files[0] != 'undefined') {
+        UI.midBarImg = {name: 'midBarImg.png', file: $('canvasMidBarImg').toDataURL("image/png").substring(22)}
     }
 
-    // Imagen de barra
+    // Imagen de turnos
     if (typeof $('asideBGimg').files[0] != 'undefined') {
-        UI.barImg = {name: 'asideBG.png', file: $('canvasAsideBGimg').toDataURL("image/png").substring(22)}
+        UI.midBarImg = {name: 'asideBG.png', file: $('canvasAsideBGimg').toDataURL("image/png").substring(22)}
     }
 
     window.ipc.save.interface(UI)
 }
 
-function canvasThumb(event, canvas, width, height) {
+function canvasThumb(file, canvas, width, height) {
     canvas.width = width
     canvas.height = height
     canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height)
     var img = document.createElement('img')
-    img.src = URL.createObjectURL( event.files[0] )
+    img.src = file
 
     img.onload = ()=> {
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height )
@@ -91,18 +92,18 @@ function clearCanvas(canvas) {
         }
     }
 
-    $('footerLogo').onchange = (e) => { 
-        if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(e.currentTarget, $('canvasLogo'), 1000, 250) } 
-        else                                                    { clearCanvas($('canvasLogo')) }
+    $('rightBarImg').onchange = (e) => { 
+        if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(URL.createObjectURL(e.currentTarget.files[0]), $('canvasRightBarImg'), 1000, 250) } 
+        else                                                    { clearCanvas($('canvasRightBarImg')) }
     }
 
-    $('barImg').onchange = (e) => { 
-        if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(e.currentTarget, $('canvasBarImg'), 1000, 180) } 
-        else                                                    { clearCanvas($('canvasBarImg')) }
+    $('midBarImg').onchange = (e) => { 
+        if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(URL.createObjectURL(e.currentTarget.files[0]), $('canvasMidBarImg'), 1000, 180) } 
+        else                                                    { clearCanvas($('canvasMidBarImg')) }
     }
 
     $('asideBGimg').onchange = (e) => { 
-        if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(e.currentTarget, $('canvasAsideBGimg'), 220, 720) } 
+        if (typeof e.currentTarget.files[0] != 'undefined')     { canvasThumb(URL.createObjectURL(e.currentTarget.files[0]), $('canvasAsideBGimg'), 220, 720) } 
         else                                                    { clearCanvas($('canvasAsideBGimg')) }
     }
 
@@ -138,8 +139,11 @@ $('historial').checked = UI.colas.historial
 $('colaDestacada').value = UI.colas.destacada
 UI.colas.excluir.forEach(num => { $$(`#exColas option[value='${num}'`).selected = true })
 
+canvasThumb(`file://${window.ipc.get.path('userData')}/_custom/rightBarImg.png`, $('canvasRightBarImg'), 1000, 250)
+canvasThumb(`file://${window.ipc.get.path('userData')}/_custom/midBarImg.png`, $('canvasMidBarImg'), 1000, 250)
+//canvasThumb(`file://${window.ipc.get.path('userData')}/_custom/asideBG.png`, $('canvasAsideBGimg'), 1000, 250)
 
-const event = new Event('change')
-$('textoColas').dispatchEvent(event)
-$('type').dispatchEvent(event)
-$('asideBGType').dispatchEvent(event)
+
+$('textoColas').dispatchEvent(ev)
+$('type').dispatchEvent(ev)
+$('asideBGType').dispatchEvent(ev)

@@ -13,8 +13,8 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 =            Preferencias            =
 =============================================*/
 
-  const CONFIG_FILE = `${app.getPath('userData')}/APPCONF.json`
-  const CONFIGUI_FILE = `${app.getPath('userData')}/APPCONFUI.json`
+  const CONFIG_FILE = `${app.getPath('userData')}/_custom/APPCONF.json`
+  const CONFIGUI_FILE = `${app.getPath('userData')}/_custom/APPCONFUI.json`
 
   // Defaults
   const DEFAULT_CONFIG = { 
@@ -118,7 +118,6 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 
   function restart() {
     if (isLinux) {
-      let exec = require('child_process').exec
       exec(restartCommandShell)
     } else {
       app.relaunch()
@@ -215,7 +214,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 
     appWin.show()
     logs.log('MAIN','START','')
-    //appWin.webContents.openDevTools()
+    appWin.webContents.openDevTools()
   }
 
   function config() {
@@ -297,6 +296,10 @@ ipcMain.on('getGlobal', (e, type) => {
   }
 })
 
+ipcMain.on('getPath', (e, dir) => {
+  e.returnValue = app.getPath(dir)
+})
+
 ipcMain.on('saveAppConf', (e, arg) => { 
   global.APPCONF = arg
   saveConf(arg, CONFIG_FILE)
@@ -309,18 +312,18 @@ ipcMain.on('saveInterface', (e, arg) => {
   saveConf(arg, CONFIGUI_FILE)
   logs.log('MAIN', 'SAVE_UI', JSON.stringify(arg))
 
-  //Logo cliente
-  if (arg.logo) {
-    const path = app.getAppPath() + '/files/'
-    const file = Buffer.from(arg.logo.file, 'base64');
-    fs.writeFileSync(path + arg.logo.name, file)
+  //Imagen derecha
+  if (arg.rightBarImg) {
+    const path = app.getPath('userData') + '/_custom/'
+    const file = Buffer.from(arg.rightBarImg.file, 'base64');
+    fs.writeFileSync(path + arg.rightBarImg.name, file)
   }
 
-  //Imagen de barra
-  if (arg.barImg) {
-    const path = app.getAppPath() + '/files/'
-    const file = Buffer.from(arg.barImg.file, 'base64');
-    fs.writeFileSync(path + arg.barImg.name, file)
+  //Imagen central
+  if (arg.midBarImg) {
+    const path = app.getPath('userData') + '/_custom/'
+    const file = Buffer.from(arg.midBarImg.file, 'base64');
+    fs.writeFileSync(path + arg.midBarImg.name, file)
   }
   restart()
 })

@@ -5,17 +5,18 @@ contextBridge.exposeInMainWorld (
         get: {
             appConf: () => ipcRenderer.sendSync('getGlobal', 'appConf'),
             interface: () => ipcRenderer.sendSync('getGlobal', 'interface'),
+            path: (dir) => ipcRenderer.sendSync('getPath', dir)
         },
         save: {
             appConf: (data) => ipcRenderer.send('saveAppConf', data ),
-            interface: (data) => ipcRenderer.send('saveInterface', data ),
+            interface: (data) => ipcRenderer.send('saveInterface', data )
         },
         dialog: {
-            saveDir: (opts) => ipcRenderer.sendSync('saveDirDialog', opts),
+            saveDir: (opts) => ipcRenderer.sendSync('saveDirDialog', opts)
         },
         logger: {
             std: (data) => ipcRenderer.send('log', data),
-            error: (data) => ipcRenderer.send('logError', data),
+            error: (data) => ipcRenderer.send('logError', data)
         },
         win: {
             close: (win) => ipcRenderer.send('closeWindow', win)
