@@ -162,7 +162,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 =============================================*/
 
   function initApp() {
-    let windowOptions = {autoHideMenuBar: true, resizable:true, show: false, webPreferences: { preload: path.join(__dirname, "preload.js") }, icon: `${app.getAppPath()}/icon64.png`}
+    let windowOptions = {autoHideMenuBar: true, resizable:true, show: false, webPreferences: { spellcheck:false, preload: path.join(__dirname, "preload.js") }, icon: `${app.getAppPath()}/icon64.png`}
     if      (APPCONF.window.type == 0)   { windowOptions.fullscreen = true }
     else if (APPCONF.window.type == 1 || APPCONF.window.type == 3)   { windowOptions.frame = false } // Borderless
     if (APPCONF.window.type != 0) { windowOptions.alwaysOnTop = APPCONF.window.alwaysOnTop }
@@ -214,13 +214,13 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 
     appWin.show()
     logs.log('MAIN','START','')
-    appWin.webContents.openDevTools()
+    //appWin.webContents.openDevTools()
   }
 
   function config() {
     const winOptions = {
       width: 720, height: 440, show:false, parent: appWin, modal:true, resizable:false, 
-      webPreferences: { preload: path.join(__dirname, "preload.js") }
+      webPreferences: { spellcheck:false, preload: path.join(__dirname, "preload.js") }
     }
     configWin = new BrowserWindow(winOptions)
     configWin.loadFile(`${__dirname}/_config/config.html`)
@@ -236,7 +236,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     function configUI() {
       const winOptions = {
         width: 720, height: 640, show:false, parent: appWin, modal:true, resizable:false, 
-        webPreferences: { preload: path.join(__dirname, "preload.js") }
+        webPreferences: { spellcheck:false, preload: path.join(__dirname, "preload.js") }
       }
       configUIWin = new BrowserWindow(winOptions)
       configUIWin.loadFile(`${__dirname}/_configUI/configUI.html`)
@@ -250,7 +250,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
   function configServer() {
     const winOptions = {
       width: 400, height: 550, show:false, parent: appWin, modal:true, resizable:false, 
-      webPreferences: { preload: path.join(__dirname, "preload.js") }
+      webPreferences: { spellcheck:false, preload: path.join(__dirname, "preload.js") }
     }
     configServerWin = new BrowserWindow(winOptions)
     configServerWin.loadFile(`${__dirname}/_configServer/configServer.html`)
