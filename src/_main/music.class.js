@@ -2,7 +2,7 @@ import {sleep} from '../exports.web.js'
 
 class Music {
     constructor(dir, maxVolume, logger) {
-        this.canciones = null
+        this.music = null
         this.dir = dir
         this.maxVolume = maxVolume
         this.el = new Audio()
@@ -10,7 +10,7 @@ class Music {
         this.el.onended = ()=> { this.next() }
         this.el.oncanplaythrough = ()=> { this.el.play() }
         this.el.onerror = (e)=> { 
-            this.logError({origin: 'MUSIC', error: 'CANT_LOAD', message: `No se pudo cargar el fichero ${this.el.src}`})
+            this.logError({origin: 'MUSIC', error: 'CANT_LOAD', message: `No se pudo cargar el archivo ${this.el.src}`})
             this.next()
         }
         this.el.volume = maxVolume
@@ -20,26 +20,41 @@ class Music {
     }
 
     async updatePlaylist() {
-        return fetch(`file://${this.dir}/list.json`).then(r => r.json()).then((data) => {
-            this.canciones = new Array()
+        return fetch(`file://${this.dir}/deploy.json`).then(r => r.json()).then((data) => {
+            if (data.music.length==0) { this.music = null; return }
 
-            data.canciones.forEach(canc => {
-                this.canciones.push({
-                    'titulo': canc.titulo,
-                    'fichero': canc.fichero
-                })  
-            })
+            this.music = new Array()
+
+            let today = new Date; 
+            const timeNow = today.getHours().toString().padStart(2,'0') + ':' + today.getMinutes().toString().padStart(2,'0')
+            today.setUTCHours(0,0,0,0)
+            today = today.getTime()
+
+            for (let id of data.music) {
+                const canc = data.catalog.music[id]
+                if (!!!canc) { continue }
+
+                const dateFrom = !!canc.dateFrom? Date.parse( canc.dateFrom ) : 0
+                const dateTo = !!canc.dateTo? Date.parse( canc.dateTo ) : 9999999999999
+                const timeFrom = canc.timeFrom?? '00:00'
+                const timeTo = canc.timeTo?? '99:99'
+
+                if ( dateFrom <= today && dateTo >= today && timeFrom <= timeNow && timeTo >= timeNow) {
+                    this.music.push(canc)
+                }
+            }
         })
     }
 
-    next() {
-        if (this.canciones != null) {
-          let next = parseInt(localStorage.getItem('nextMusic'))
-          if (isNaN(next) || next >= this.canciones.length) { next = 0 }
-          this.el.src = `file://${this.dir}/files/${this.canciones[next].fichero}`
-          
-          this.log({origin: 'MUSIC', event: 'PLAY', message:  this.canciones[next].titulo})
-          localStorage.setItem('nextMusic', ++next)
+    async next() {
+        await this.updatePlaylist()
+        if (!!this.music) {
+            let next = parseInt(localStorage.getItem('nextMusic'))
+            if (isNaN(next) || next >= this.music.length) { next = 0 }
+            this.el.src = `file://${this.dir}/music/${this.music[next].file}`
+            
+            this.log({origin: 'MUSIC', event: 'PLAY', message: 'id:' + this.music[next].id + ' name: ' + this.music[next].name})
+            localStorage.setItem('nextMusic', ++next)
         }
       }
 

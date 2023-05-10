@@ -6,37 +6,54 @@
     <script type="module" src="../_configServer/configServer.js"></script>
     <link rel="stylesheet" href="../res/config.css">
   </head>
-  <body class="config">
-      <form id="config">       
-        <div>
-          <input type="checkbox" id="pan">
-          <label for="pan">Aviso de pan</label>
+  <body class="config server">
+    <nav id="configTabs">
+      <button data-tab="colas">Colas</button>
+      <button data-tab="otros">Otros</button>
+    </nav>
+  
+    <form id="config">
+      <div id="configTabsContent" class="tabsContent">
+        <!-- --------------  PESTAÑA COLAS  ------------------------>
+        <div id="tab-colas">
+          <div class="colas">
+            <label for="ncolas">Colas</label>
+            <select id="ncolas">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+            <div id="colas"></div>
         </div>
-        <div class="colas">
-          <label for="ncolas">Colas</label>
-          <select id="ncolas">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-            <option value="5">5</option>
-            <option value="6">6</option>
-          </select>
-          <div id="colas"></div>
+        </div>
+  
+  
+  
+        <!-- --------------  PESTAÑA OTROS  ------------------------>
+        <div id="tab-otros">
+          <div>
+            <input type="checkbox" id="pan">
+            <label for="pan">Aviso de pan</label>
+          </div>
+        </div>
       </div>
+    </form>
 
-        <button id="save">Aplicar</button>
-      </form>
+    <button id="save">Aplicar</button>
 
-      <template id="icons">
-        <option value="0">&nbsp;</option>
-        <option value="1">&#xE200;</option>
-        <option value="2">&#xE201;</option>
-        <option value="3">&#xE202;</option>
-        <option value="4">&#xE203;</option>
-        <option value="5">&#xE204;</option>
-        <option value="6">&#xE205;</option>
-        <option value="7">&#xE206;</option>
-      </template>
+    <template id="icons">
+      <option value="0">&nbsp;</option>
+      <option value="1">&#xE200;</option>
+      <option value="2">&#xE201;</option>
+      <option value="3">&#xE202;</option>
+      <option value="4">&#xE203;</option>
+      <option value="5">&#xE204;</option>
+      <option value="6">&#xE205;</option>
+      <option value="7">&#xE206;</option>
+    </template>
   </body>
+  
 </html>

@@ -1,13 +1,13 @@
 {
   "name": "canal",
    "productName": "canal",
-  "version": "6.1.1",
+  "version": "6.8.1",
   "description": "Canal y Turnomatic CVC",
   "main": "src/main.js",
   "author": "Comunicacion Visual Canarias",
   "license": "MIT",
   "devDependencies": {
-    "electron": "^15.1.2"
+    "electron": "22.0.1"
   },
   "scripts": {
     "start": "electron ."

@@ -5,98 +5,42 @@ const fs = require("fs")
 const path = require('path')
 const logger = require('./log.js')
 const isLinux = process.platform === "linux"
-const restartCommandShell =  `~/system/scripts/appsCvc restart ${appName} &`
+const restartCommandShell =  `/home/cvc/scripts/appsCtrl restart ${appName} &`
+const {DEFAULT_CONFIG} = require('./exports.js')
 
-var appWin; var configWin; var configServerWin; var configUIWin;
+var appWin, configWin, configServerWin;
 
-/*=============================================
-=            Preferencias            =
-=============================================*/
-
-  const CONFIG_FILE = `${app.getPath('userData')}/_custom/APPCONF.json`
-  const CONFIGUI_FILE = `${app.getPath('userData')}/_custom/APPCONFUI.json`
-
-  // Defaults
-  const DEFAULT_CONFIG = { 
-    logsDir: '/home/cvc/telemetry/apps',
-    avisoSonoro: true, 
-    server: {
-      ip:'127.0.0.1',
-      port: 3000,
-    },
-    media: {
-      path: '/home/cvc/_contenidos'
-    },
-    music: {
-      path:'/home/cvc/_musica',
-      volume: .9,
-      type: 0
-    },
-    window: {
-      type: 0,
-      posX: 0,
-      posY: 0,
-      width: 1280,
-      height: 720,
-      alwaysOnTop: true
-    }
-  }
-
-  const DEFAULT_UI = {
-    info: true,
-    type: 0,
-    colas: {
-      historial: false,
-      mensaje: false,
-      destacada: 0,
-      excluir: [],
-      BGtype: 1,
-    },
-    colors: {
-      main: '#ff0000',
-      secondary: '#00ff00',
-      aside: '#000000'
-    }
-  }
-
-  if ( !(global.APPCONF = loadConfigFile(CONFIG_FILE)) )      { global.APPCONF = DEFAULT_CONFIG }
-  if ( !(global.UI = loadConfigFile(CONFIGUI_FILE)) )  { global.UI = DEFAULT_UI }
-
-/*=====  End of Preferencias  ======*/
-
+const CONFIG_FILE = `${app.getPath('userData')}/_custom/CONF.json`
+if ( !(global.CONF = loadConfigFile(CONFIG_FILE)) )      { global.CONF = DEFAULT_CONFIG }
 
 
 /*=============================================
 =            Menu            =
 =============================================*/
 
-  const menu = [
+  const MENU = [
     {
-        role: 'appMenu',
-        label: 'Archivo',
-        submenu: [
-            {label:'Reiniciar', accelerator: 'CmdOrCtrl+R', click() { restart() } },
-            {role:'forcereload', label:'Refrescar' },
-            {role: 'quit', label:'Salir'}
-        ]
+      role: 'appMenu',
+      label: 'Archivo',
+      submenu: [
+          {label:'Reiniciar', accelerator: 'CmdOrCtrl+R', click() { restart() } },
+          {role:'forcereload', label:'Refrescar' },
+          {role: 'quit', label:'Salir'}
+      ]
     },{
-        label: 'Editar',
-        submenu: [
-            {label:'Ajustes', accelerator: 'CmdOrCtrl+E',  click() {
-              if (configWin == null)  { config() } 
-              else                    { configWin.focus() } 
-            }},
-            {label:'Interfaz', accelerator: 'CmdOrCtrl+P',  click() {
-              if (!configUIWin)       { configUI() } 
-              else                    { configUIWin.focus() } 
-            }},
-            {label:'Ajustes del servidor', accelerator: 'CmdOrCtrl+S',  click() {
-              if (configServerWin == null)     { configServer() } 
-              else                             { configWin.focus() } 
-            }},
-            {type: 'separator'},
-            {label:'Restaurar parámetros',     click() { restoreDialog() } }
-        ]
+      label: 'Editar',
+      submenu: [
+          {label:'Ajustes', accelerator: 'CmdOrCtrl+E',  click() {
+            if (configWin == null)  { config() } 
+            else                    { configWin.focus() } 
+          }},
+          {label:'Ajustes del servidor', accelerator: 'CmdOrCtrl+S',  click() {
+            if (configServerWin == null)     { configServer() } 
+            else                             { configWin.focus() } 
+          }},
+          {type: 'separator'},
+          {label:'Restaurar parámetros',     click() { restoreDialog() } }
+      ]
     }
     ,{
       role: 'help',
@@ -105,10 +49,10 @@ var appWin; var configWin; var configServerWin; var configUIWin;
           {label:'Información',     click() { about() } },
           {role: 'toggledevtools', label:'Consola Web'}
       ]
-  }
+    }
   ]
 
-/*=====  End of Menu  ======*/
+/*=====  End of Funciones  ======*/
 
 
 
@@ -117,16 +61,13 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 =============================================*/
 
   function restart() {
-    if (isLinux) {
-      exec(restartCommandShell)
-    } else {
-      app.relaunch()
-      app.quit()
-    }
+    if (isLinux)    { exec(restartCommandShell) }
+    else            { app.relaunch(); app.quit() }
   }
 
-  function saveConf(items, file) {
-    fs.writeFileSync(file, JSON.stringify(items), 'utf8')
+  function saveConf(items, file) { 
+    fs.mkdirSync( path.dirname(file), { recursive: true } )
+    fs.writeFileSync(file, JSON.stringify(items, null, '\t'), 'utf8') 
   }
 
   function loadConfigFile(file) {
@@ -138,11 +79,7 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     } else { return false}
   }
 
-  function restore() {
-    saveConf(DEFAULT_CONFIG, CONFIG_FILE)
-    saveConf(DEFAULT_UI, CONFIGUI_FILE)
-    restart() 
-  }
+  function restore() { saveConf(DEFAULT_CONFIG, CONFIG_FILE); restart()  }
 
   function restoreDialog() {
     const options  = {
@@ -163,19 +100,19 @@ var appWin; var configWin; var configServerWin; var configUIWin;
 
   function initApp() {
     let windowOptions = {autoHideMenuBar: true, resizable:true, show: false, webPreferences: { spellcheck:false, preload: path.join(__dirname, "preload.js") }, icon: `${app.getAppPath()}/icon64.png`}
-    if      (APPCONF.window.type == 0)   { windowOptions.fullscreen = true }
-    else if (APPCONF.window.type == 1 || APPCONF.window.type == 3)   { windowOptions.frame = false } // Borderless
-    if (APPCONF.window.type != 0) { windowOptions.alwaysOnTop = APPCONF.window.alwaysOnTop }
+    if      (CONF.window.type == 0)                             { windowOptions.fullscreen = true }
+    else if (CONF.window.type == 1 || CONF.window.type == 3)    { windowOptions.frame = false } // Borderless or fullBorderless
+    if (CONF.window.type != 0)                                  { windowOptions.alwaysOnTop = CONF.window.alwaysOnTop }
     appWin = new BrowserWindow(windowOptions)
 
-    switch (APPCONF.window.type) {
+    switch (CONF.window.type) {
       case 0: // Fullscreen
         screen.on('display-metrics-changed', restart )
       break
       case 1: // Borderless
-        appWin.setPosition( APPCONF.window.posX, APPCONF.window.posY)
+        appWin.setPosition( CONF.window.posX, CONF.window.posY)
       case 2: // Normal Window
-        appWin.setSize(APPCONF.window.width, APPCONF.window.height)
+        appWin.setSize(CONF.window.width, CONF.window.height)
       break
       case 3: // fullBorderless
         let width=0, height=0, displays = screen.getAllDisplays()
@@ -190,36 +127,28 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     }
 
     let tpl
-    switch(UI.type) {
-      case 0: // Sin colas
-        tpl = '_canalcorp'
-      break;
-      case 1: // Derecha
-        tpl = '_derecha'
-      break;
-      case 2: // Izquierda
-        tpl = '_izquierda'
-      break;
-      case 3: // Abajo
-        tpl = '_abajo'
-      break;
+    switch(CONF.interface.type) {
+      case 0: tpl = '_canalcorp'; break;      // Sin colas
+      case 1: tpl = '_derecha';   break;      // Derecha
+      case 2: tpl = '_izquierda'; break;      // Izquierda
+      case 3: tpl = '_abajo';     break;      // Abajo
     }
 
     appWin.loadFile(`${__dirname}/_main/${tpl}.html`)
     appWin.setTitle(appName)
     appWin.on('page-title-updated', (e)=>{ e.preventDefault()})
-    Menu.setApplicationMenu( Menu.buildFromTemplate(menu) )
+    Menu.setApplicationMenu( Menu.buildFromTemplate(MENU) )
     appWin.setResizable(false)
     appWin.on('closed', () => { logs.log('MAIN','QUIT',''); app.quit() })
 
     appWin.show()
     logs.log('MAIN','START','')
-    //appWin.webContents.openDevTools()
+    appWin.webContents.openDevTools()
   }
 
   function config() {
     const winOptions = {
-      width: 720, height: 440, show:false, parent: appWin, modal:true, resizable:false, 
+      width: 450, height: 600, show:false, parent: appWin, modal:true, resizable:false, 
       webPreferences: { spellcheck:false, preload: path.join(__dirname, "preload.js") }
     }
     configWin = new BrowserWindow(winOptions)
@@ -231,21 +160,6 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     configWin.on('closed', () => { configWin = null })
     //configWin.webContents.openDevTools()
   }
-
-    // Ventana de personalizacion de interfaz
-    function configUI() {
-      const winOptions = {
-        width: 720, height: 640, show:false, parent: appWin, modal:true, resizable:false, 
-        webPreferences: { spellcheck:false, preload: path.join(__dirname, "preload.js") }
-      }
-      configUIWin = new BrowserWindow(winOptions)
-      configUIWin.loadFile(`${__dirname}/_configUI/configUI.html`)
-      configUIWin.setMenu( null )
-      configUIWin.show()
-      
-      configUIWin.on('closed', () => { configUIWin = null })
-      //configUIWin.webContents.openDevTools()
-    }
 
   function configServer() {
     const winOptions = {
@@ -265,13 +179,12 @@ var appWin; var configWin; var configServerWin; var configUIWin;
     const options  = {
       type: 'info',
       buttons: ['Aceptar'],
-      message: 'Canal corporativo y turnomatic digital\nComunicacion Visual Canarias 2021\nContacto: 928 67 29 81'
+      message: 'Canal corporativo y turnomatic digital\nComunicacion Visual Canarias 2023\nContacto: 928 67 29 81'
      }
     dialog.showMessageBox(appWin, options)
   }
 
 /*=====  End of Ventanas  ======*/
-
 
 
 app.on('ready', initApp)
@@ -288,10 +201,7 @@ ipcMain.on('execShell', (e, cmd) => {
 ipcMain.on('getGlobal', (e, type) => {
   switch(type) {
     case 'appConf':
-      e.returnValue = global.APPCONF
-    break
-    case 'interface':
-      e.returnValue = global.UI
+      e.returnValue = global.CONF
     break
   }
 })
@@ -300,31 +210,16 @@ ipcMain.on('getPath', (e, dir) => {
   e.returnValue = app.getPath(dir)
 })
 
-ipcMain.on('saveAppConf', (e, arg) => { 
-  global.APPCONF = arg
-  saveConf(arg, CONFIG_FILE)
-  logs.log('MAIN', 'SAVE_APPCONF', JSON.stringify(arg))
-  restart()
-})
+ipcMain.on('saveAppConf', (e, conf, files) => { 
+  global.CONF = conf
+  saveConf(conf, CONFIG_FILE)
+  logs.log('MAIN', 'SAVE_CONF', JSON.stringify(conf, null, '\t'))
 
-ipcMain.on('saveInterface', (e, arg) => { 
-  global.UI = arg
-  saveConf(arg, CONFIGUI_FILE)
-  logs.log('MAIN', 'SAVE_UI', JSON.stringify(arg))
-
-  //Imagen derecha
-  if (arg.rightBarImg) {
-    const path = app.getPath('userData') + '/_custom/'
-    const file = Buffer.from(arg.rightBarImg.file, 'base64');
-    fs.writeFileSync(path + arg.rightBarImg.name, file)
+  for ( let file of files ) {
+    const buf = Buffer.from(file.file, 'base64');
+    fs.writeFileSync(app.getPath('userData')+'/_custom/'+file.name, buf)
   }
 
-  //Imagen central
-  if (arg.midBarImg) {
-    const path = app.getPath('userData') + '/_custom/'
-    const file = Buffer.from(arg.midBarImg.file, 'base64');
-    fs.writeFileSync(path + arg.midBarImg.name, file)
-  }
   restart()
 })
 
@@ -332,9 +227,6 @@ ipcMain.on('closeWindow', (e, arg) => {
   switch(arg) {
     case 'config':
       configWin.close()
-    break
-    case 'configUI':
-      configUIWin.close()
     break
     case 'configServer':
       configServerWin.close()
@@ -368,7 +260,7 @@ ipcMain.on('saveDirDialog', (e, arg) => {
 })
 
 // Logs
-var logs = new logger(`${global.APPCONF.logsDir}/`, appName)
+var logs = new logger(`${global.CONF.logsDir}/`, appName)
 ipcMain.on('log', (e, arg) =>       { logs.log(arg.origin, arg.event, arg.message) })
 ipcMain.on('logError', (e, arg) =>  { logs.error(arg.origin, arg.error, arg.message) })
 

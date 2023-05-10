@@ -2,125 +2,116 @@ import LineIn from './linein.class.js'
 import wSocket from './wSocket.class.js'
 import Content from './content.class.js'
 import Music from './music.class.js'
-import {$} from '../exports.web.js'
+import {$, shadeColor, updateTime} from '../exports.web.js'
 
-const conf = window.ipc.get.appConf()
-const UI = window.ipc.get.interface()
+const CONF = window.ipc.get.appConf()
 
-/*=============================================
-=            Funciones            =
-=============================================*/
+/*======================================================================
+====================            ASPECTO            =====================
+======================================================================*/
 
-function shadeColor(color, percent) {
-  var num = parseInt(color.replace("#",""),16),
-  amt = Math.round(2.55 * percent),
-  R = (num >> 16) + amt,
-  B = (num >> 8 & 0x00FF) + amt,
-  G = (num & 0x0000FF) + amt;
-  return "#" + (0x1000000 + (R<255?R<1?0:R:255)*0x10000 + (B<255?B<1?0:B:255)*0x100 + (G<255?G<1?0:G:255)).toString(16).slice(1)
-}
+  if (!CONF.interface.infoBar) { document.body.classList.add('noInfo') }
+  const css = new CSSStyleSheet()
 
-/**
- * Actualiza la hora basada en el sistema y la pinta en su contenedor
- */
-function time() {
-  let date = new Date
-  $('time').textContent = date.getHours().toString().padStart(2,'0') + ':' + date.getMinutes().toString().padStart(2,'0')
-}
+  // Colores
+  css.insertRule(` :root { --app-color: ${CONF.interface.colors.app}; } `)
+  css.insertRule(` :root { --main-color: ${CONF.interface.colors.main}; } `)
+  css.insertRule(` :root { --main-color-light: ${shadeColor(CONF.interface.colors.main, 30)}; } `)
+  css.insertRule(` :root { --main-color-dark: ${shadeColor(CONF.interface.colors.main, -30)}; } `)
+  css.insertRule(` :root { --secondary-color: ${CONF.interface.colors.secondary}; } `)
+  css.insertRule(` :root { --secondary-color-light: ${shadeColor(CONF.interface.colors.secondary, 30)}; } `)
+  css.insertRule(` :root { --secondary-color-dark: ${shadeColor(CONF.interface.colors.secondary, -30)}; } `)
+  css.insertRule(` :root { --turnos-color: ${CONF.interface.colors.aside}; } `)
+  css.insertRule(` :root { --turnos-color-light: ${shadeColor(CONF.interface.colors.aside, 30)}; } `)
+  css.insertRule(` :root { --transition-duration: ${CONF.media.transitionDuration}s } `)
 
+  switch (CONF.interface.colas.BGtype) {
+    case 1: // Color
+      css.insertRule(` #colas { background: radial-gradient( circle, var(--turnos-color-light), var(--turnos-color));} `)
+    break
+    case 2: // Img
+      css.insertRule(` #colas { background: url(file://${window.ipc.get.path('userData').replace(/\\/g,'/')}/_custom/asideBG.png) 0 0 no-repeat; background-size: 100% 100%} `)
+    break
+  }
 
- 
-/*=====  End of Funciones  ======*/
+  document.adoptedStyleSheets = [css]
 
-
-/*=============================================
-=            MAIN            =
-=============================================*/
-
-// Aplica CSS basado en la configuracion
-if (!UI.info) { document.body.classList.add('noInfo') }
-const css = new CSSStyleSheet()
-// Colores
-css.insertRule(` :root { --main-color: ${UI.colors.main}; } `)
-css.insertRule(` :root { --main-color-light: ${shadeColor(UI.colors.main, 30)}; } `)
-css.insertRule(` :root { --main-color-dark: ${shadeColor(UI.colors.main, -30)}; } `)
-css.insertRule(` :root { --secondary-color: ${UI.colors.secondary}; } `)
-css.insertRule(` :root { --secondary-color-light: ${shadeColor(UI.colors.secondary, 30)}; } `)
-css.insertRule(` :root { --secondary-color-dark: ${shadeColor(UI.colors.secondary, -30)}; } `)
-css.insertRule(` :root { --turnos-color: ${UI.colors.aside}; } `)
-css.insertRule(` :root { --turnos-color-light: ${shadeColor(UI.colors.aside, 30)}; } `)
-switch (UI.colas.BGtype) {
-  case 1: // Color
-    css.insertRule(` #colas { background: radial-gradient( circle, var(--turnos-color-light), var(--turnos-color));} `)
-  break
-  case 2: // Img
-    css.insertRule(` #colas { background: url(file://${window.ipc.get.path('userData').replace(/\\/g,'/')}/_custom/asideBG.png) 0 0 no-repeat; background-size: 100% 100%} `)
-  break
-}
-
-document.adoptedStyleSheets = [css]
-
-$('midImg').src = `file://${window.ipc.get.path('userData')}/_custom/midBarImg.png`
-$('rightImg').src = `file://${window.ipc.get.path('userData')}/_custom/rightBarImg.png`
+  $('midImg').src = `file://${window.ipc.get.path('userData')}/_custom/midBarImg.png`
+  $('rightImg').src = `file://${window.ipc.get.path('userData')}/_custom/rightBarImg.png`
 
 
-var music
-switch(conf.music.type) {
-  case 0: // Hilo integrado
-    music = new Music(conf.music.path, conf.music.volume, window.ipc.logger)
-    music.updatePlaylist().then( ()=> { music.next() })
-    setInterval(()=>{music.updatePlaylist()}, 30000) // 30 seconds
-  break
 
-  case 1: //Hilo externo
-    music = new LineIn(conf.music.volume)
-    music.play()
-    navigator.mediaDevices.ondevicechange = ()=> { music.play() }
-  break
 
-  case 2: //Sin musica
-    music = false
-  break
-}
+/*======================================================================
+====================            MUSICA            =====================
+======================================================================*/
+  var music
+  switch(CONF.music.type) {
+    case 0: // Hilo integrado
+      music = new Music(CONF.deployDir, CONF.music.volume, window.ipc.logger)
+      music.updatePlaylist().then( ()=> { music.next() })
+      setInterval(()=>{music.updatePlaylist()}, 30000) // 30 seconds
+    break
 
-var content = new Content(conf.media.path, music, window.ipc.logger)
-content.next()
+    case 1: // Hilo externo
+      music = new LineIn(CONF.music.volume)
+      music.play()
+      navigator.mediaDevices.ondevicechange = ()=> { music.play() }
+    break
 
-const ting = conf.avisoSonoro? new Audio(`file://${window.ipc.get.path('userData')}/_custom/ting.opus`) : false;
-var ws = new wSocket(conf.server, content, UI, window.ipc, {ting:ting, pan:true})
-ws.init()
+    case 2: // Sin musica
+      music = false
+    break
+  }
 
-time()
-setInterval(time, 5000)
 
-/*=====  End of MAIN  ======*/
+
+
+/*======================================================================
+===========            CONTENIDO, SOCKET Y HORA            =============
+======================================================================*/
+  var content = new Content(CONF.deployDir, music, window.ipc.logger, {volume: CONF.media.volume, transition_duration: CONF.media.transitionDuration})
+  content.next()
+
+  var ws = new wSocket(CONF, content, window.ipc, true)
+  ws.init()
+
+  updateTime($('time'), 5000)
 
 
 
 // Atajos de teclado para testeo
 window.onkeyup = (e) => {
-  switch (e.keyCode) {
-    // Enter: Siguiente contenido
-    case 13:
+  switch (e.key) {
+    case 'Enter':
       window.ipc.logger.std({origin: 'USER', event: 'SKIP_CONTENT', message: ''})
       content.next()
     break
-    // Shift: Siguiente cancion
-    case 16:
-      if (conf.music.type == 0) { window.ipc.logger.std({origin: 'USER', event: 'SKIP_MUSIC', message: ''}); music.next()}
+    case 'm':
+      if (CONF.music.type == 0) { window.ipc.logger.std({origin: 'USER', event: 'SKIP_MUSIC', message: ''}); music.next()}
     break
-    case 80:
+    case 'p':
       content.togglePause()
     break
 
-    case 49: // Sube cola 1
+    case '1': // Sube cola 1
       window.ipc.logger.std({origin: 'USER', event: 'SUBE_COLA', message: ''})
       ws.ws.send( JSON.stringify( {accion: 'sube', cola: 0, texto: 'test'} ) )
     break
 
-    case 50: // Baja cola 1
+    case '2': // Baja cola 1
       window.ipc.logger.std({origin: 'USER', event: 'BAJA_COLA', message: ''})
       ws.ws.send( JSON.stringify( {accion: 'baja', cola: 0, texto: 'test'} ) )
+    break
+
+    case '3': // Sube cola 2
+      window.ipc.logger.std({origin: 'USER', event: 'SUBE_COLA', message: ''})
+      ws.ws.send( JSON.stringify( {accion: 'sube', cola: 1, texto: 'test'} ) )
+    break
+
+    case '4': // Baja cola 2
+      window.ipc.logger.std({origin: 'USER', event: 'BAJA_COLA', message: ''})
+      ws.ws.send( JSON.stringify( {accion: 'baja', cola: 1, texto: 'test'} ) )
     break
   }
 }

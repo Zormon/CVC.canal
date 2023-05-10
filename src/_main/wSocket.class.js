@@ -1,19 +1,28 @@
-import {iconNames, $, $$, isFunction, modalBox} from '../exports.web.js'
+import {iconNames, $, $$, may, modalBox} from '../exports.web.js'
 
 class wSocket {
-    constructor(server, content, UI, ipc, options={pan:false, ting:false}) {
-        this.ip = server.ip
-        this.port = server.port
+    constructor(CONF, content, ipc, pan=false) {
+        this.ip = CONF.server.ip
+        this.port = CONF.server.port
         this.content = content
-        this.UI = UI
+        this.UI = CONF.interface
 
         this.userData = ipc.get.path('userData')
         this.shellExec = ipc.sys.shellExec
         this.log = ipc.logger.std
         this.logError = ipc.logger.error
 
-        this.ting = (typeof options.ting != 'undefined')? options.ting : false
-        this.pan = (typeof options.pan != 'undefined')? options.pan : false
+        this.pan = pan
+
+        this.ting = CONF.ting
+        this.currentTing = new Audio()
+        this.tingClips = []
+        if (!!this.ting && this.ting < 100) {
+            this.tingClips[0] = new Audio(`../res/tings/${CONF.ting}.opus`)
+            for (let i=1;i<=99;i++) { this.tingClips[i] = this.tingClips[0] }
+        } else {
+            for (let i=0;i<=99;i++) { this.tingClips[i] = new Audio(`../res/tings/speech${CONF.ting}/${i}.opus`) }
+        }
     }
 
     init() {
@@ -39,20 +48,20 @@ class wSocket {
                         switch (msg.event.type) {
                             case 'pan':
                                 if ( this.pan ) { 
-                                    this.content.eventMedia(`${this.userData}/_custom/avisoPan.mp4`, 16, 1)
+                                    this.content.eventMedia(`${this.userData}/_custom/avisoPan.mp4`, 16, 10)
                                     this.log({origin: 'NODESERVER', event: 'PAN', message: `Aviso del pan`})
                                 }
                             break
                             case 'media':
-                                if ( this.content.eventMedia(`${this.content.dir}/files/${msg.event.data.file}`, msg.event.data.duration, msg.event.data.volume)  ) {
+                                if ( this.content.eventMedia(`${this.content.dir}/media/${msg.event.data.file}`, msg.event.data.duration, msg.event.data.volume)  ) {
                                     this.log({origin: 'NODESERVER', event: 'MEDIA_EVENT', message: `Archivo: ${msg.event.data.file}, Duracion: ${msg.event.data.duration}`})
                                 } else {
                                     this.logError({origin: 'NODESERVER', error: 'MEDIA_EVENT_CANT_PLAY', message: `Evento recibido pero no se pudo reproducir ${msg.event.data.file}`})
                                 }
                             break
-                            case 'shellExec':
-                                this.shellExec(msg.event.cmd)
-                                this.log({origin: 'NODESERVER', event: 'SHELLEXEC_EVENT', message: `Comando: ${msg.event.data.cmd}`})
+                            case 'command':
+                                this.shellExec(msg.event.data.shell)
+                                this.log({origin: 'NODESERVER', event: 'COMMAND_EVENT', message: `Comando: ${msg.event.data.cmd}`})
                             break
                         }
                     }
@@ -65,9 +74,7 @@ class wSocket {
         }
     }
 	
-	close() {
-        this.ws.close()
-    }
+	close() { this.ws.close() }
 
     spread(colas, turnos) {
         // Crea los divs con las colas
@@ -84,39 +91,39 @@ class wSocket {
 
         colasEnPantalla.forEach(col => {
             cola = document.createElement('div'); cola.id =  `cola${col.id}`; cola.style = `background:${colas[col.id].color}; color:${colas[col.id].color};`
-                icon = document.createElement('i'); icon.className = `icon-${iconNames[colas[col.id].icon]}`
-                texto = document.createElement('span'); texto.className = 'texto'; texto.textContent = turnos[col.id].texto;
-                num = document.createElement('span'); num.className = 'num'; num.textContent = turnos[col.id].num
-                nombre = document.createElement('span'); nombre.className = 'nombre'; nombre.textContent = colas[col.id].nombre; nombre.style = `border-color:${colas[col.id].color}`
-            
-                cola.appendChild(icon); cola.appendChild(nombre); cola.appendChild(num)
-                if (this.UI.colas.mensaje) { cola.appendChild(texto); divColas.classList.add('texto')  }
+            icon = document.createElement('i'); icon.className = `icon-${iconNames[colas[col.id].icon]}`
+            texto = document.createElement('span'); texto.className = 'texto'; texto.textContent = turnos[col.id].texto;
+            num = document.createElement('span'); num.className = 'num'; num.textContent = turnos[col.id].num
+            nombre = document.createElement('span'); nombre.className = 'nombre'; nombre.textContent = colas[col.id].nombre; nombre.style = `border-color:${colas[col.id].color}`
+        
+            cola.appendChild(icon); cola.appendChild(nombre); cola.appendChild(num)
+            if (this.UI.colas.mensaje) { cola.appendChild(texto); divColas.classList.add('texto')  }
 
-                if (this.UI.colas.historial) {
-                    divColas.classList.add('history')
-                    let table = document.createElement('table'); table.className = 'historial'
-                    let tr1 = document.createElement('tr'); let tr2 = document.createElement('tr'); let tr3 = document.createElement('tr')
-                    let td1 = document.createElement('td'); let td2 = document.createElement('td')
-                    let td3 = document.createElement('td'); let td4 = document.createElement('td')
-                    let td5 = document.createElement('td'); let td6 = document.createElement('td')
+            if (this.UI.colas.historial) {
+                divColas.classList.add('history')
+                let table = document.createElement('table'); table.className = 'historial'
+                let tr1 = document.createElement('tr'); let tr2 = document.createElement('tr'); let tr3 = document.createElement('tr')
+                let td1 = document.createElement('td'); let td2 = document.createElement('td')
+                let td3 = document.createElement('td'); let td4 = document.createElement('td')
+                let td5 = document.createElement('td'); let td6 = document.createElement('td')
 
-                    tr1.className = 'history1'
-                    tr2.className = 'history2'
-                    tr3.className = 'history3'
-                    td1.className = td3.className = td5.className = 'historyNum'
-                    td2.className = td4.className = td6.className = 'historyText'
-                    td1.textContent = td2.textContent = td3.textContent = td4.textContent = td5.textContent = td6.textContent ='-'
+                tr1.className = 'history1'
+                tr2.className = 'history2'
+                tr3.className = 'history3'
+                td1.className = td3.className = td5.className = 'historyNum'
+                td2.className = td4.className = td6.className = 'historyText'
+                td1.textContent = td2.textContent = td3.textContent = td4.textContent = td5.textContent = td6.textContent ='-'
 
-                    tr1.appendChild(td1);   tr1.appendChild(td2)
-                    tr2.appendChild(td3);   tr2.appendChild(td4)
-                    tr3.appendChild(td5);   tr3.appendChild(td6)
-                    table.appendChild(tr1)
-                    if (colasEnPantalla.length <= 2) { table.appendChild(tr2) }
-                    if (colasEnPantalla.length == 1) { table.appendChild(tr3) }
-                    
-                    cola.appendChild(table)
-                }
-                divColas.appendChild(cola)
+                tr1.appendChild(td1);   tr1.appendChild(td2)
+                tr2.appendChild(td3);   tr2.appendChild(td4)
+                tr3.appendChild(td5);   tr3.appendChild(td6)
+                table.appendChild(tr1)
+                if (colasEnPantalla.length <= 2) { table.appendChild(tr2) }
+                if (colasEnPantalla.length == 1) { table.appendChild(tr3) }
+                
+                cola.appendChild(table)
+            }
+            divColas.appendChild(cola)
         })
 
         divColas.classList.add(`ncolas-${colasEnPantalla.length}`)
@@ -168,8 +175,12 @@ class wSocket {
             mainText.textContent = texto
         }
 
+        // Reproducir aviso
+        if ( !!this.ting && this.currentTing.paused ) {
+            this.currentTing = this.tingClips[num]
+            this.currentTing.play() 
+        }
 
-        if (this.ting) { this.ting.pause(); this.ting.play() }
         mainNum.textContent = num.toString()
         mainNum.classList.remove('effect')
         mainNum.offsetHeight // Reflow

@@ -1,4 +1,4 @@
-import {$, $$$} from '../exports.web.js'
+import {$, $$$, tabNav} from '../exports.web.js'
 
 var CONF = window.ipc.get.appConf()
 var colas = {}
@@ -72,3 +72,5 @@ fetch(`http://${CONF.server.ip}:${CONF.server.port}/getConfig`).then( resp => re
             else { $('config').reportValidity() }
         }
 })
+
+tabNav( $('configTabs'), $('configTabsContent'))
