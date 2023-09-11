@@ -21,6 +21,8 @@ async function saveConf() {
     CONF.window.posY = $('windowPosY').value != ''? parseInt($('windowPosY').value) : parseInt($('windowPosY').placeholder)
     CONF.window.alwaysOnTop = $('alwaysOnTop').checked
 
+    CONF.debug.autoOpenDevTools = $('autoOpenDevTools').checked
+
     CONF.interface.colors.app = $('appColor').value
     CONF.interface.colors.main = $('mainColor').value
     CONF.interface.colors.secondary = $('secondaryColor').value
@@ -125,6 +127,7 @@ $('colaDestacada').value = CONF.interface.colas.destacada
 CONF.interface.colas.excluir.forEach(num => { $$(`#exColas option[value='${num}'`).selected = true })
 
 
+$('autoOpenDevTools').checked = CONF.debug.autoOpenDevTools
 
 // Events
 const event = new Event('change')

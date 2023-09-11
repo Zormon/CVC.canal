@@ -143,7 +143,7 @@ if ( !(global.CONF = loadConfigFile(CONFIG_FILE)) )      { global.CONF = DEFAULT
 
     appWin.show()
     logs.log('MAIN','START','')
-    appWin.webContents.openDevTools()
+    if (CONF.debug.autoOpenDevTools) { appWin.webContents.openDevTools() }
   }
 
   function config() {
@@ -158,7 +158,7 @@ if ( !(global.CONF = loadConfigFile(CONFIG_FILE)) )      { global.CONF = DEFAULT
     configWin.show()
     
     configWin.on('closed', () => { configWin = null })
-    //configWin.webContents.openDevTools()
+    if (CONF.debug.autoOpenDevTools) { configWin.webContents.openDevTools() }
   }
 
   function configServer() {
@@ -172,7 +172,7 @@ if ( !(global.CONF = loadConfigFile(CONFIG_FILE)) )      { global.CONF = DEFAULT
     configServerWin.show()
     
     configServerWin.on('closed', () => { configServerWin = null })
-    //configServerWin.webContents.openDevTools()
+    if (CONF.debug.autoOpenDevTools) { configServerWin.webContents.openDevTools() }
   }
 
   function about() {

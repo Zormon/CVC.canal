@@ -2,6 +2,9 @@ const DEFAULT_CONFIG = {
   logsDir: '/home/cvc/telemetry/apps',
   deployDir: '/home/cvc/deploy',
   ting: 1,
+  debug: {
+    autoOpenDevTools: false
+  },
   server: {
     ip:'127.0.0.1',
     port: 3000,
