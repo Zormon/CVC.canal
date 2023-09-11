@@ -2,9 +2,10 @@ import {sleep} from '../exports.web.js'
 
 class Music {
     constructor(dir, maxVolume, logger) {
-        this.music = null
+        this.music = {list: [], catalog: []}
         this.dir = dir
         this.maxVolume = maxVolume
+        this.current = null
         this.el = new Audio()
         this.el.id = 'music'
         this.el.onended = ()=> { this.next() }
@@ -21,9 +22,8 @@ class Music {
 
     async updatePlaylist() {
         return fetch(`file://${this.dir}/deploy.json`).then(r => r.json()).then((data) => {
-            if (data.music.length==0) { this.music = null; return }
-
-            this.music = new Array()
+            this.music.catalog = data.catalog.music
+            this.music.list = []
 
             let today = new Date; 
             const timeNow = today.getHours().toString().padStart(2,'0') + ':' + today.getMinutes().toString().padStart(2,'0')
@@ -31,7 +31,7 @@ class Music {
             today = today.getTime()
 
             for (let id of data.music) {
-                const canc = data.catalog.music[id]
+                const canc = this.music.catalog[id]
                 if (!!!canc) { continue }
 
                 const dateFrom = !!canc.dateFrom? Date.parse( canc.dateFrom ) : 0
@@ -40,7 +40,7 @@ class Music {
                 const timeTo = canc.timeTo?? '99:99'
 
                 if ( dateFrom <= today && dateTo >= today && timeFrom <= timeNow && timeTo >= timeNow) {
-                    this.music.push(canc)
+                    this.music.list.push(id)
                 }
             }
         })
@@ -48,12 +48,14 @@ class Music {
 
     async next() {
         await this.updatePlaylist()
-        if (!!this.music) {
+        if (this.music.list.length > 0) {
             let next = parseInt(localStorage.getItem('nextMusic'))
-            if (isNaN(next) || next >= this.music.length) { next = 0 }
-            this.el.src = `file://${this.dir}/music/${this.music[next].file}`
+            if (isNaN(next) || next >= this.music.list.length) { next = 0 }
             
-            this.log({origin: 'MUSIC', event: 'PLAY', message: 'id:' + this.music[next].id + ' name: ' + this.music[next].name})
+            this.current = this.music.catalog[this.music.list[next]]
+            this.el.src = `file://${this.dir}/music/${this.current.file}`
+            
+            this.log({origin: 'MUSIC', event: 'PLAY', message: ' name: ' + this.current.name})
             localStorage.setItem('nextMusic', ++next)
         }
       }

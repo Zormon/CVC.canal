@@ -4,8 +4,7 @@ import {$, $$, urlExists} from '../exports.web.js'
 class Content {
     constructor(dir, music, logger, {transition_duration=0, volume=0} = {}) {
         this.deviceID = -1
-        this.media = null
-        this.events = null
+        this.media = {list: [], catalog: []}
         this.dir = dir
         this.music = music
         this.current = null
@@ -17,7 +16,6 @@ class Content {
         this.transitionDuration = transition_duration
         this.mediaVolume = volume
 
-
         this.nextTimeout
         this.contentTimer
         this.fadeTimer
@@ -27,7 +25,8 @@ class Content {
     async updatePlaylist() {
         return fetch(`file://${this.dir}/deploy.json`).then(r => r.json()).then((data) => {
             this.deviceID = data.info.id
-            this.media = new Array()
+            this.media.catalog = data.catalog.media
+            this.media.list = []
 
             let today = new Date; 
             const timeNow = today.getHours().toString().padStart(2,'0') + ':' + today.getMinutes().toString().padStart(2,'0')
@@ -35,7 +34,7 @@ class Content {
             today = today.getTime()
 
             for (let id of data.media) {
-                const cont = data.catalog.media[id]
+                const cont = this.media.catalog[id]
                 if (!!!cont) { continue }
 
                 const dateFrom = !!cont.dateFrom? Date.parse( cont.dateFrom ) : 0
@@ -44,11 +43,9 @@ class Content {
                 const timeTo = cont.timeTo?? '99:99'
 
                 if ( dateFrom <= today && dateTo >= today && timeFrom <= timeNow && timeTo >= timeNow) {
-                    this.media.push(cont)
+                    this.media.list.push(id)
                 }
             }
-
-            this.events = data.events
 
             this.log({origin: 'MEDIA', event: 'UPDATE_PLAYLIST', message: `Equipo: ${data.info.device.name}, Contenidos: ${data.media.length}, Eventos: ${data.events.length}`,})
         })
@@ -58,9 +55,9 @@ class Content {
         await this.updatePlaylist()
         clearTimeout( this.nextTimeout )
         var _this = this
-        if(!this.music.isFading && this.media != null && !this.paused) {
+        if(!this.music.isFading && this.media.list != null && !this.paused) {
             this.startTimer = Date.now()
-            if (this.media.length > 0) { // Hay contenidos
+            if (this.media.list.length > 0) { // Hay contenidos
                 this.showNoContents(false)
                 try { // La primera vez no podrá hacer esto
                     this.contentTimer.clear()
@@ -69,9 +66,9 @@ class Content {
                 } catch (e) {}
                 
                 let next = parseInt(localStorage.getItem('nextContent'))
-                if ( isNaN(next) || next >= this.media.length) { next = 0 }
+                if ( isNaN(next) || next >= this.media.list.length) { next = 0 }
     
-                this.current = this.media[next]
+                this.current = this.media.catalog[this.media.list[next]]
                 if (this.music) {
                     if ( this.current.volume > 0 )  { this.music.fadeOut() }
                     else                            { this.music.fadeIn() }
@@ -150,7 +147,13 @@ class Content {
     /**
      * Genera un evento con un contenido, pausando el vídeo y mostrando el contenido
      */
-     async eventMedia(file, duration, volume) {
+    async eventMedia(media) {
+        if ( !!!this.media.catalog[media] ) { return false }
+
+        const file = `file://${this.dir}/media/${this.media.catalog[media].file}`
+        const duration = this.media.catalog[media].duration
+        const volume = this.media.catalog[media].volume
+
         var _this = this
         if (!this.evtMedia && await urlExists(file)) { // Solo hace algo si no hay ya un evento en curso y existe el archivo
             this.evtMedia = document.createElement("video")

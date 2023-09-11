@@ -51,12 +51,12 @@ class wSocket {
                                     this.content.eventMedia(`${this.userData}/_custom/avisoPan.mp4`, 16, 10)
                                     this.log({origin: 'NODESERVER', event: 'PAN', message: `Aviso del pan`})
                                 }
-                            break
-                            case 'media':
-                                if ( this.content.eventMedia(`${this.content.dir}/media/${msg.event.data.file}`, msg.event.data.duration, msg.event.data.volume)  ) {
-                                    this.log({origin: 'NODESERVER', event: 'MEDIA_EVENT', message: `Archivo: ${msg.event.data.file}, Duracion: ${msg.event.data.duration}`})
+                                break
+                                case 'media':
+                                    if ( this.content.eventMedia(msg.event.media)  ) {
+                                        this.log({origin: 'NODESERVER', event: 'MEDIA_EVENT', message: `Media: ${msg.event.media}`})
                                 } else {
-                                    this.logError({origin: 'NODESERVER', error: 'MEDIA_EVENT_CANT_PLAY', message: `Evento recibido pero no se pudo reproducir ${msg.event.data.file}`})
+                                    this.logError({origin: 'NODESERVER', error: 'MEDIA_EVENT_CANT_PLAY', message: `Evento recibido pero no se pudo reproducir ${msg.event.media}`})
                                 }
                             break
                             case 'command':
