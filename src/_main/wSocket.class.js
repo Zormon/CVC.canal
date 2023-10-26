@@ -1,4 +1,4 @@
-import {iconNames, $, $$, may, modalBox} from '../exports.web.js'
+import {iconNames, $, $$, modalBox, playAudio} from '../exports.web.js'
 
 class wSocket {
     constructor(CONF, content, ipc, pan=false) {
@@ -15,14 +15,9 @@ class wSocket {
         this.pan = pan
 
         this.ting = CONF.ting
-        this.currentTing = new Audio()
-        this.tingClips = []
-        if (!!this.ting && this.ting < 100) {
-            this.tingClips[0] = new Audio(`../res/tings/${CONF.ting}.opus`)
-            for (let i=1;i<=99;i++) { this.tingClips[i] = this.tingClips[0] }
-        } else {
-            for (let i=0;i<=99;i++) { this.tingClips[i] = new Audio(`../res/tings/speech${CONF.ting}/${i}.opus`) }
-        }
+        this.tingRules = CONF.tingRules
+
+        this.isTinging = false
     }
 
     init() {
@@ -176,9 +171,31 @@ class wSocket {
         }
 
         // Reproducir aviso
-        if ( !!this.ting && this.currentTing.paused ) {
-            this.currentTing = this.tingClips[num]
-            this.currentTing.play() 
+        if ( !!this.ting && !this.isTinging ) {
+            this.isTinging = true
+            let audioClip = ''
+            if (this.ting < 100) { // Tings
+                audioClip = `../res/tings/${this.ting}.opus`
+            } else { // Speech
+                audioClip = `../res/tings/speech${this.ting}/${num}.opus`
+            }
+
+            playAudio(audioClip).then(()=>{
+                if (!!this.tingRules) {
+                    const txt = texto.toUpperCase()
+                    const audioFile = this.tingRules[txt]
+                    if (!!audioFile) { 
+                        playAudio(`${this.userData}/_custom/tingRules/${audioFile}`).then(()=>{ 
+                            this.isTinging = false 
+                        })
+                    } else {
+                        this.isTinging = false
+                    }
+                } else {
+                    this.isTinging = false
+                }
+            }
+            )
         }
 
         mainNum.textContent = num.toString()

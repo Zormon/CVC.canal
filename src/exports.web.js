@@ -22,6 +22,19 @@ function isFunction(f) {return f && {}.toString.call(f)==='[object Function]'}
 function may(f,...args){try{ return f(...args)}catch{}}
 
 
+function playAudio(url) {
+  return new Promise(function(resolve, reject) {   
+      var audio = new Audio();                     
+      audio.preload = "auto";                      
+      audio.autoplay = true;                       
+      audio.onerror = reject;                      
+      audio.onended = resolve;                     
+
+      audio.src = url;
+  })
+}
+
+
 /**
 * Muestra un modal con multiples funciones
 * @param {String} id Identificador del modal
@@ -161,6 +174,7 @@ export {
   updateTime,
   may,
   readFileAsDataURL,
+  playAudio,
   getById as $,
   querySel as $$,
   querySelAll as $$$

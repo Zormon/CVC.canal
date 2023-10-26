@@ -2,6 +2,7 @@ const DEFAULT_CONFIG = {
   logsDir: '/home/cvc/telemetry/apps',
   deployDir: '/home/cvc/deploy',
   ting: 1,
+  tingRules: [],
   debug: {
     autoOpenDevTools: false
   },
