@@ -43,7 +43,7 @@ class wSocket {
                         switch (msg.event.type) {
                             case 'pan':
                                 if ( this.pan ) { 
-                                    this.content.eventMedia(`${this.userData}/_custom/avisoPan.mp4`, 16, 10)
+                                    this.content.eventMedia(-1)
                                     this.log({origin: 'NODESERVER', event: 'PAN', message: `Aviso del pan`})
                                 }
                                 break

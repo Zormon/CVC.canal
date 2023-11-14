@@ -2,7 +2,7 @@ import Timer from './timer.class.js'
 import {$, $$, urlExists} from '../exports.web.js'
 
 class Content {
-    constructor(dir, music, logger, {transition_duration=0, volume=0} = {}) {
+    constructor(dir, music, logger, userDataDir, {transition_duration=0, volume=0} = {}) {
         this.deviceID = -1
         this.media = {list: [], catalog: []}
         this.dir = dir
@@ -15,6 +15,8 @@ class Content {
         this.logError = logger.error
         this.transitionDuration = transition_duration
         this.mediaVolume = volume
+
+        this.userDataDir = userDataDir
 
         this.nextTimeout
         this.contentTimer
@@ -148,11 +150,20 @@ class Content {
      * Genera un evento con un contenido, pausando el vídeo y mostrando el contenido
      */
     async eventMedia(media) {
-        if ( !!!this.media.catalog[media] ) { return false }
+        let file, duration, volume
+        if (media == -1) { // Aviso pan
+            file = `${this.userDataDir}/_custom/avisoPan.mp4`
+            duration = 16
+            volume = 10
+        } else {
+            if ( !!!this.media.catalog[media] ) { return false }
+    
+            file = `file://${this.dir}/media/${this.media.catalog[media].file}`
+            duration = this.media.catalog[media].duration
+            volume = this.media.catalog[media].volume
+        }
 
-        const file = `file://${this.dir}/media/${this.media.catalog[media].file}`
-        const duration = this.media.catalog[media].duration
-        const volume = this.media.catalog[media].volume
+        
 
         var _this = this
         if (!this.evtMedia && await urlExists(file)) { // Solo hace algo si no hay ya un evento en curso y existe el archivo

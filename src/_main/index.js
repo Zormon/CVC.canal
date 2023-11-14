@@ -70,7 +70,13 @@ const CONF = window.ipc.get.appConf()
 /*======================================================================
 ===========            CONTENIDO, SOCKET Y HORA            =============
 ======================================================================*/
-  var content = new Content(CONF.deployDir, music, window.ipc.logger, {volume: CONF.media.volume, transition_duration: CONF.media.transitionDuration})
+  var content = new Content(
+    CONF.deployDir,
+    music,
+    window.ipc.logger,
+    window.ipc.get.path('userData'),
+    {volume: CONF.media.volume, transition_duration: CONF.media.transitionDuration}
+  )
   content.next()
 
   var ws = new wSocket(CONF, content, window.ipc, true)
@@ -113,5 +119,9 @@ window.onkeyup = (e) => {
       window.ipc.logger.std({origin: 'USER', event: 'BAJA_COLA', message: ''})
       ws.ws.send( JSON.stringify( {accion: 'baja', cola: 1, texto: 'test'} ) )
     break
+
+    case 'P': // Aviso pan
+      window.ipc.logger.std({origin: 'USER', event: 'AVISO_PAN', message: ''})
+      navigator.sendBeacon('http://localhost:3000/pan')
   }
 }
