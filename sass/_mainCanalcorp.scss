@@ -13,6 +13,7 @@ body.main {
     width: 100vw;
 
     &.noInfo { #info { display: none; } }
+    &.noClock { #time { display: none; } }
 
     *::selection { background: none; }
 

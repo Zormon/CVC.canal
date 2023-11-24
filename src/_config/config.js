@@ -29,6 +29,7 @@ async function saveConf() {
     CONF.interface.colas.BGtype = parseInt($('asideBGType').value)
     CONF.interface.colors.aside = $('asideBGColor').value
     CONF.interface.infoBar = $('infoBar').checked
+    CONF.interface.clock = $('clock').checked
     CONF.interface.type = parseInt($('interfaceType').value)
     CONF.interface.colas.historial = $('historial').checked
     CONF.interface.colas.mensaje = $('textoColas').checked
@@ -92,6 +93,10 @@ $('textoColas').onchange = (e) => {
     if (e.currentTarget.checked)    { $('historial').disabled = false }
     else                            { $('historial').checked = false; $('historial').disabled = true }
  }
+ $('infoBar').onchange = (e) => {
+    if (e.currentTarget.checked)    { $('clock').disabled = false }
+    else                            { $('clock').disabled = true }
+ }
 
 /* *********************** / EVENTS *****************  */
 
@@ -120,6 +125,7 @@ $('secondaryColor').value = CONF.interface.colors.secondary
 $('asideBGType').value = CONF.interface.colas.BGtype
 $('asideBGColor').value = CONF.interface.colors.aside
 $('infoBar').checked = CONF.interface.infoBar
+$('clock').checked = CONF.interface.clock
 $('interfaceType').value = CONF.interface.type
 $('textoColas').checked = CONF.interface.colas.mensaje
 $('historial').checked = CONF.interface.colas.historial

@@ -28,6 +28,7 @@ const DEFAULT_CONFIG = {
   },
   interface: {
     infoBar: true,
+    clock: true,
     type: 0,
     colas: {
       historial: false,

@@ -85,4 +85,8 @@ body.main {
             ;
         }
     }
+
+    &.noClock {
+        #time { display: none; }
+    }
 }

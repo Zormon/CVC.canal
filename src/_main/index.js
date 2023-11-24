@@ -11,6 +11,7 @@ const CONF = window.ipc.get.appConf()
 ======================================================================*/
 
   if (!CONF.interface.infoBar) { document.body.classList.add('noInfo') }
+  if (!CONF.interface.clock) { document.body.classList.add('noClock') }
   const css = new CSSStyleSheet()
 
   // Colores
