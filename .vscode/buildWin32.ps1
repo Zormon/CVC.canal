@@ -6,7 +6,7 @@ $electronVer = (Get-Content package.json | ConvertFrom-Json).devDependencies.ele
 $buildDir = "_build/$arch/$appName"
 
 rm -r -ErrorAction Ignore $buildDir
-cp -Recurse -Force D:/Desarrollo/ElectronBinaries/$electronVer/$arch/ $buildDir
+cp -Recurse -Force D:/ElectronBinaries/$electronVer/$arch/ $buildDir
 
 mkdir $buildDir/resources/app
 cp package.json $buildDir/resources/app
