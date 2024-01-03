@@ -30,6 +30,7 @@ const DEFAULT_CONFIG = {
     infoBar: true,
     clock: true,
     type: 0,
+    overlay: false,
     colas: {
       historial: false,
       mensaje: false,

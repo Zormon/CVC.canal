@@ -148,7 +148,7 @@ if ( !(global.CONF = loadConfigFile(CONFIG_FILE)) )      { global.CONF = DEFAULT
 
   function config() {
     const winOptions = {
-      width: 450, height: 600, show:false, parent: appWin, modal:true, resizable:false, 
+      width: 450, height: 650, show:false, parent: appWin, modal:true, resizable:false, 
       webPreferences: { spellcheck:false, preload: path.join(__dirname, "preload.js") }
     }
     configWin = new BrowserWindow(winOptions)

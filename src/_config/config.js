@@ -30,6 +30,7 @@ async function saveConf() {
     CONF.interface.colors.aside = $('asideBGColor').value
     CONF.interface.infoBar = $('infoBar').checked
     CONF.interface.clock = $('clock').checked
+    CONF.interface.overlay = $('overlay').checked
     CONF.interface.type = parseInt($('interfaceType').value)
     CONF.interface.colas.historial = $('historial').checked
     CONF.interface.colas.mensaje = $('textoColas').checked
@@ -42,21 +43,28 @@ async function saveConf() {
     file = $('rightBarImg').files[0]
     if (!!file) {
         dataUrl = await readFileAsDataURL(file)
-        files.push( {name: '/img/rightBarImg.png', file: dataUrl.substring(22)} )
+        files.push( {name: 'rightBarImg.png', file: dataUrl.substring(22)} )
     }
 
     // Imagen central
     file = $('midBarImg').files[0]
     if (!!file) {
         dataUrl = await readFileAsDataURL(file)
-        files.push( {name: '/img/midBarImg.png', file: dataUrl.substring(22)} )
+        files.push( {name: 'midBarImg.png', file: dataUrl.substring(22)} )
+    }
+
+    // Imagen overlay
+    file = $('overlayImg').files[0]
+    if (!!file) {
+        dataUrl = await readFileAsDataURL(file)
+        files.push( {name: 'overlayImg.png', file: dataUrl.substring(22)} )
     }
 
     // Imagen de turnos
     file = $('asideBGimg').files[0]
     if (!!file) {
         dataUrl = await readFileAsDataURL(file)
-        files.push( {name: '/img/asideBG.png', file: dataUrl.substring(22)} )
+        files.push( {name: 'asideBG.png', file: dataUrl.substring(22)} )
     }
 
     window.ipc.save.appConf( CONF, files )
@@ -126,6 +134,7 @@ $('asideBGType').value = CONF.interface.colas.BGtype
 $('asideBGColor').value = CONF.interface.colors.aside
 $('infoBar').checked = CONF.interface.infoBar
 $('clock').checked = CONF.interface.clock
+$('overlay').checked = CONF.interface.overlay
 $('interfaceType').value = CONF.interface.type
 $('textoColas').checked = CONF.interface.colas.mensaje
 $('historial').checked = CONF.interface.colas.historial

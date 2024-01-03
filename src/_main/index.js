@@ -35,10 +35,13 @@ const CONF = window.ipc.get.appConf()
     break
   }
 
+  if (CONF.interface.overlay) { css.insertRule(` #overlayImg { visibility: visible; } `) }
+
   document.adoptedStyleSheets = [css]
 
   $('midImg').src = `file://${window.ipc.get.path('userData')}/_custom/midBarImg.png`
   $('rightImg').src = `file://${window.ipc.get.path('userData')}/_custom/rightBarImg.png`
+  $('overlayImg').src = `file://${window.ipc.get.path('userData')}/_custom/overlayImg.png`
 
 
 
